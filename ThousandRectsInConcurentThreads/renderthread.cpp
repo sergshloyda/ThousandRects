@@ -14,12 +14,13 @@ RenderThread::~RenderThread()
 {
 
 }
-void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings)  {
+void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex)  {
 	
 	//DrawReadyCondition::img_ready=false;
 	QImage image(rect.width(), rect.height(), QImage::Format_ARGB32_Premultiplied);
 {
-		QMutexLocker locker(&DrawReadyCondition::gMutex);
+	//	QMutexLocker locker(&DrawReadyCondition::gMutex);
+	QMutexLocker locker(pDataMutex);
 	image.fill(Qt::white);
 	QPainter p(&image);
 	_width=rect.width();

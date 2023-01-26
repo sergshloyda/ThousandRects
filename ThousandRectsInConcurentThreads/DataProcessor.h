@@ -3,30 +3,39 @@
 #include "dev_struct.h"
 #include <memory>
 #include "element_info.h"
-
+#include "qmutex.h"
 template<class T> class DataProcessor
 {
 private:
-	
+	QMutex _mutex;
 	std::vector<std::shared_ptr<T>> _ptr_list;
 	int _size;
 	int _max_size;
-public:
-	void add_element( T* elem);
+	int _requested_size;
+private:
 	void add_ptr_element(std::shared_ptr<T> elem);
-	T* get_element(const int pos);
 	std::shared_ptr<T> get_ptr_element(const int pos);
 	void get_element(T* elem,const int pos);
 	int get_size();
 	int get_max_size();
 	std::vector<T*> getLastValues(int request_size);
+public:
+	void add_element( T* elem);
+	T* get_element(const int pos);
+	void set_requested_size(int reg_size);
+	std::vector<T*> collect_last_values();
+	QMutex* get_mutex_ptr();
+
 	DataProcessor(int max_size);
 	~DataProcessor(void);
 };
 template<class T>  DataProcessor<T>::DataProcessor(int max_size):
 							_size(0),
 							_max_size(max_size),
-							_ptr_list(max_size)
+							_ptr_list(max_size),
+							_requested_size(0),
+							_mutex(QMutex::Recursive)
+							
 {
 }
 template<class T>  DataProcessor<T>::~DataProcessor(void)
@@ -36,7 +45,7 @@ template<class T>  DataProcessor<T>::~DataProcessor(void)
 template<class T> void   DataProcessor<T>::add_element( T* elem)
 {
 
-
+	QMutexLocker locker(&_mutex);
 	if(_size<_max_size)
 	{
 		_ptr_list[_size].reset(elem);
@@ -73,7 +82,7 @@ template<class T> void DataProcessor<T>::add_ptr_element(std::shared_ptr<T> elem
 
  template<class T> T*  DataProcessor<T>::get_element(const int pos)
 {
-
+	QMutexLocker locker(&_mutex);
 	return _ptr_list[pos].get();
 }
 
@@ -102,7 +111,7 @@ template<class T> int   DataProcessor<T>::get_max_size()
 
 template<class T> std::vector<T*> DataProcessor<T>::getLastValues(int request_size)
 {
-	
+	QMutexLocker locker(&_mutex);
 	std::vector<T*> vec;
 	if(_size>request_size)
 	{
@@ -125,5 +134,21 @@ template<class T> std::vector<T*> DataProcessor<T>::getLastValues(int request_si
 		}
 	}
 	return vec;
+}
+
+template<class T> void DataProcessor<T>::set_requested_size(int req_size)
+{
+	QMutexLocker locker(&_mutex);
+	Q_ASSERT(req_size>0);
+	_requested_size=req_size;
+}
+
+template<class T> std::vector<T*> DataProcessor<T>::collect_last_values()
+{
+	return getLastValues(_requested_size);
+}
+template<class T>  QMutex* DataProcessor<T>:: get_mutex_ptr()
+{
+	return &_mutex;
 }
 typedef  DataProcessor<ElementInfo> ResultData;

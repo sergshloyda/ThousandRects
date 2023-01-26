@@ -29,7 +29,7 @@ void TWidget::setImage(const QImage& image)
 {
 	_image=image;
 	update();
-	//DrawReadyCondition::img_ready=true;
+
 }
 void TWidget::hasNewRender(const QImage& image)
 {
@@ -40,19 +40,14 @@ void TWidget::Plot()
 
 	std::vector<ElementInfo*> vec;
 	QRect r=rect();
-	//if(!DrawReadyCondition::img_ready) return;
 	render->setPlotStep(3.0);
-	
-
-	{
-		QMutexLocker locker(&DrawReadyCondition::gMutex);
-		render->calc_visible_elements(r);
+	render->calc_visible_elements(r);
 	int request_size=render->get_visible_count();
+	_pDataArray->set_requested_size(request_size);
+	vec=_pDataArray->collect_last_values();
 	
-		vec=_pDataArray->getLastValues(request_size);
-	}
 
-	QtConcurrent::run(render,&RenderThread::paint,vec,r,_pDeviceSettings);
+	QtConcurrent::run(render,&RenderThread::paint,vec,r,_pDeviceSettings,_pDataArray->get_mutex_ptr());
 
 }
 

@@ -30,7 +30,7 @@ public:
 	~RenderThread();
 	Q_SIGNAL void hasNewRender(const QImage &);
 	// Must be thread-safe, we can't access the widget directly!
-	void paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings) ;
+	void paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex) ;
 	void calc_visible_elements(const QRect& rect);
 	int get_visible_count();
 	void pointInRect(const QPointF& pos,int* num_chan);

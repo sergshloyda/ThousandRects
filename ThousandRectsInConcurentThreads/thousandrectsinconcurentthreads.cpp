@@ -4,10 +4,10 @@
 #include "ThickElement.h"
 #include "qmutex.h"
 
-volatile bool DrawReadyCondition::img_ready=true;
-QMutex DrawReadyCondition::gMutex;
+//volatile bool DrawReadyCondition::img_ready=true;
+//QMutex DrawReadyCondition::gMutex;
 ThousandRectsInConcurentThreads::ThousandRectsInConcurentThreads(QWidget *parent)
-	: QWidget(parent),_result_data(500)
+	: QWidget(parent),_result_data(1000)
 {
 	ui.setupUi(this);
 	_pDeviceSettings = new DeviceSettings(this);
@@ -155,7 +155,7 @@ void ThousandRectsInConcurentThreads::received_data()
 		{
 
 
-			QMutexLocker locker(&DrawReadyCondition::gMutex);
+		//	QMutexLocker locker(&DrawReadyCondition::gMutex);
 			_result_data.add_element(elem_info);
 
 		}

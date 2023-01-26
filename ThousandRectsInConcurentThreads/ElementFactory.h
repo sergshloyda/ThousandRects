@@ -30,11 +30,7 @@ public:
 	ElementFactory(QObject* parent=0);
 	virtual ~ElementFactory(void);
 	virtual AbstractElement* create(const amp_us_struct_t& amp_times,const quint8 num_chan, DeviceSettings* dev_settings)=0;
-	//	template <class T>
-	//T* create(const amp_us_struct_t& amp_times,const quint8 num_chan)
-	//{
-	//	return static_cast<T*>(create(const amp_us_struct_t& amp_times,const quint8 num_chan));
-	//}
+
 };
 
 class DefectElementFactory:public ElementFactory

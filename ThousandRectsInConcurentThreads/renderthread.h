@@ -9,6 +9,7 @@
 #include"qdebug.h"
 #include "DataProcessor.h"
 #include "devicesettings.h"
+#include "drawstrategycontainer.h"
 
 #define NUM_EXTRA_POR NUM_STRBS_EXTRA+1
 #define NUM_STROB_AK 0
@@ -24,6 +25,11 @@ public:
 class RenderThread : public QObject
 {
 	Q_OBJECT
+		enum DrawStrategy{
+			CoordDrawStategyId,
+			MnemoDrawStrategyId,
+			ThickRowDrawStrategyId
+	};
 
 public:
 	RenderThread(QObject *parent);
@@ -50,7 +56,7 @@ private:
 	void SetColors();
 private:
 
-	QImage _image;
+	//QImage _image;
 	int _visible_elements;
 	int _width;
 	int _height;
@@ -85,6 +91,7 @@ private:
 	QColor _error_flag_no_ak_color;
 	QColor _error_flag_lamination_color;
 	QMutex* _pMutex;
+	DrawStrategyContainer* _pDrawStrategyContainer;
 
 
 };

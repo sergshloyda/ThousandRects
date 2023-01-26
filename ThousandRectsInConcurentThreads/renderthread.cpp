@@ -1,13 +1,18 @@
 #include "renderthread.h"
 #include "qapplication.h"
 #include "thousandrectsinconcurentthreads.h"
-
+#include "coorddrawstrategy.h"
+#include "mnemodrawstrategy.h"
+#include "thickrowdrawstrategy.h"
 
 
 RenderThread::RenderThread(QObject *parent)
-	: QObject(parent),_image(2048, 2048, QImage::Format_ARGB32_Premultiplied),_label_txt_margin(9)
+	: QObject(parent)/*,_image(2048, 2048, QImage::Format_ARGB32_Premultiplied)*/,_label_txt_margin(9)
 {
-
+	_pDrawStrategyContainer=new DrawStrategyContainer(parent);
+	_pDrawStrategyContainer->registerDrawStrategy(CoordDrawStategyId,CLASSMETA(CoordDrawStrategy),parent);
+	_pDrawStrategyContainer->registerDrawStrategy(MnemoDrawStrategyId,CLASSMETA(MnemoDrawStrategy),parent);
+	_pDrawStrategyContainer->registerDrawStrategy(ThickRowDrawStrategyId,CLASSMETA(ThickRowDrawStrategy),parent);
 }
 
 RenderThread::~RenderThread()
@@ -16,11 +21,11 @@ RenderThread::~RenderThread()
 }
 void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex)  {
 	
-	//DrawReadyCondition::img_ready=false;
+	
 	QImage image(rect.width(), rect.height(), QImage::Format_ARGB32_Premultiplied);
-{
+	
 	//	QMutexLocker locker(&DrawReadyCondition::gMutex);
-	QMutexLocker locker(pDataMutex);
+	
 	image.fill(Qt::white);
 	QPainter p(&image);
 	_width=rect.width();
@@ -30,18 +35,28 @@ void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,
 
 	SetColors();
 	MarkOutBackground(pDeviceSettings->getChansCount());
-	
-	PlotCoord(p,vec,_coord_plotter_rect);
+	{
+	QMutexLocker locker(pDataMutex);
+	_pDrawStrategyContainer->drawStrategy<CoordDrawStrategy>(CoordDrawStategyId)->Plot(p,vec,_coord_plotter_rect,_plot_step_x);
+	//PlotCoord(p,vec,_coord_plotter_rect);
 	//CoordPlotStrategy coordPlotStrategy;
 	//coordPlotStrategy(p,vec,_coord_plotter_rect);
-	PlotMnemo(p,vec,_mnemo_plotter_rect);
+	MnemoDrawStrategy* mnemo_draw_strategy=_pDrawStrategyContainer->drawStrategy<MnemoDrawStrategy>(MnemoDrawStrategyId);
+	mnemo_draw_strategy->SetInitialSettings(pDeviceSettings);
+	mnemo_draw_strategy->Plot(p,vec,_mnemo_plotter_rect,_plot_step_x);
 	for(quint8 num_chan=0;num_chan<pDeviceSettings->getChansCount();num_chan++)
 	{
 
 		switch(pDeviceSettings->getChanMode(num_chan))
 		{
 		case TD_TOL:
-			PlotThickRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
+			{
+				ThickRowDrawStrategy* thick_draw_strategy=_pDrawStrategyContainer->drawStrategy<ThickRowDrawStrategy>(ThickRowDrawStrategyId);
+				Q_ASSERT(thick_draw_strategy);
+				thick_draw_strategy->SetInitialSettings(pDeviceSettings,num_chan);
+				thick_draw_strategy->Plot(p,vec,_chan_plotter_rect_arr[num_chan],_plot_step_x);
+			//PlotThickRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
+			}
 			break;
 		case TD_TOL_LAM:
 			PlotLaminationThickRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
@@ -170,7 +185,8 @@ void RenderThread::DrawLabelChannel(QPainter&painter,const quint8 num_chan)
 	QString chan_name=tr("%1-%2").arg(num_chan+1).arg(_pDeviceSettings->getChanModeName(num_chan));
 	painter.save();
 	painter.setPen(_pDeviceSettings->getOscColor("TEXT_COLOR"));
-
+	//QFont serifFont("Times", 10, QFont::Bold);
+	//painter.setFont(serifFont);
 	painter.drawText(draw_rect,Qt::AlignCenter,chan_name);
 	if(_pDeviceSettings->getSelChanNum()==num_chan)
 	{

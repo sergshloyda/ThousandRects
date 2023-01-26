@@ -30,7 +30,7 @@ ThousandRectsInConcurentThreads::ThousandRectsInConcurentThreads(QWidget *parent
 	_factoryContainer->registerFactory("B_ScanElementFactory",CLASSMETA(B_ScanElementFactory));
 
 	_factoryContainer->registerFactory("SumDefectInfoFactory",CLASSMETA(SumDefectInfoFactory));
-	//	gImageReady=false;
+
 }
 
 ThousandRectsInConcurentThreads::~ThousandRectsInConcurentThreads()

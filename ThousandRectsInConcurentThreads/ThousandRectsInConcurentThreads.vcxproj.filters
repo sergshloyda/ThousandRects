@@ -131,6 +131,51 @@
     <ClCompile Include="ThickElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="drawstrategycontainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_drawstrategycontainer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_drawstrategycontainer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="coorddrawstrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_coorddrawstrategy.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_coorddrawstrategy.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="mnemodrawstrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_mnemodrawstrategy.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_mnemodrawstrategy.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="thickrowdrawstrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_thickrowdrawstrategy.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_thickrowdrawstrategy.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="basedrawrowstrategy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_basedrawrowstrategy.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_basedrawrowstrategy.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="thousandrectsinconcurentthreads.h">
@@ -164,6 +209,21 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="ThickElement.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="drawstrategycontainer.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="coorddrawstrategy.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mnemodrawstrategy.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="thickrowdrawstrategy.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="basedrawrowstrategy.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

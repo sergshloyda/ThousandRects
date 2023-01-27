@@ -10,7 +10,7 @@ class DrawStrategyContainer : public QObject
 public:
 	DrawStrategyContainer(QObject *parent);
 	~DrawStrategyContainer();
-void registerDrawStrategy(const quint8 idDrawStrategy,const QMetaObject* meta,QObject* pParent);
+void registerDrawStrategy(const quint8 idDrawStrategy,const QMetaObject* meta);
 	QObject* drawStrategy(const quint8 idDrawStrategy);
 	template <class T>
 	T* drawStrategy(const quint8 idDrawStrategy)
@@ -18,8 +18,8 @@ void registerDrawStrategy(const quint8 idDrawStrategy,const QMetaObject* meta,QO
 		return static_cast<T*>(drawStrategy(idDrawStrategy));
 	}
 private:
-	QHash<quint8,QObject*> _objById;
-	
+	QHash<const quint8,const QMetaObject*> _metaByName;
+
 };
 
 #endif // DRAWSTRATEGYCONTAINER_H

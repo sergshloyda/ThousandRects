@@ -4,46 +4,48 @@
 #include "coorddrawstrategy.h"
 #include "mnemodrawstrategy.h"
 #include "thickrowdrawstrategy.h"
+#include "thicklamrowdrawstrategy.h"
+#include "defectrowdrawstrategy.h"
+#include <memory>
 
 
 RenderThread::RenderThread(QObject *parent)
-	: QObject(parent)/*,_image(2048, 2048, QImage::Format_ARGB32_Premultiplied)*/,_label_txt_margin(9)
+	: QObject(parent),_label_txt_margin(9)
 {
 	_pDrawStrategyContainer=new DrawStrategyContainer(parent);
-	_pDrawStrategyContainer->registerDrawStrategy(CoordDrawStategyId,CLASSMETA(CoordDrawStrategy),parent);
-	_pDrawStrategyContainer->registerDrawStrategy(MnemoDrawStrategyId,CLASSMETA(MnemoDrawStrategy),parent);
-	_pDrawStrategyContainer->registerDrawStrategy(ThickRowDrawStrategyId,CLASSMETA(ThickRowDrawStrategy),parent);
+	_pDrawStrategyContainer->registerDrawStrategy(CoordDrawStategyId,CLASSMETA(CoordDrawStrategy));
+	_pDrawStrategyContainer->registerDrawStrategy(MnemoDrawStrategyId,CLASSMETA(MnemoDrawStrategy));
+	_pDrawStrategyContainer->registerDrawStrategy(ThickRowDrawStrategyId,CLASSMETA(ThickRowDrawStrategy));
+	_pDrawStrategyContainer->registerDrawStrategy(ThickLamRowDrawStrategyId,CLASSMETA(ThickLamRowDrawStrategy));
+	_pDrawStrategyContainer->registerDrawStrategy(DefectRowDrawStrategyId,CLASSMETA(DefectRowDrawStrategy));
 }
 
 RenderThread::~RenderThread()
 {
 
 }
-void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex)  {
-	
-	
+void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex) 
+{
 	QImage image(rect.width(), rect.height(), QImage::Format_ARGB32_Premultiplied);
-	
-	//	QMutexLocker locker(&DrawReadyCondition::gMutex);
 	
 	image.fill(Qt::white);
 	QPainter p(&image);
 	_width=rect.width();
 	_height=rect.height();
 
-	_pDeviceSettings=pDeviceSettings;
+//	_pDeviceSettings=pDeviceSettings;
 
-	SetColors();
-	MarkOutBackground(pDeviceSettings->getChansCount());
+
+	MarkOutBackground(pDeviceSettings);
 	{
 	QMutexLocker locker(pDataMutex);
-	_pDrawStrategyContainer->drawStrategy<CoordDrawStrategy>(CoordDrawStategyId)->Plot(p,vec,_coord_plotter_rect,_plot_step_x);
-	//PlotCoord(p,vec,_coord_plotter_rect);
-	//CoordPlotStrategy coordPlotStrategy;
-	//coordPlotStrategy(p,vec,_coord_plotter_rect);
-	MnemoDrawStrategy* mnemo_draw_strategy=_pDrawStrategyContainer->drawStrategy<MnemoDrawStrategy>(MnemoDrawStrategyId);
-	mnemo_draw_strategy->SetInitialSettings(pDeviceSettings);
-	mnemo_draw_strategy->Plot(p,vec,_mnemo_plotter_rect,_plot_step_x);
+	std::shared_ptr<CoordDrawStrategy> pCoordStrategy(_pDrawStrategyContainer->drawStrategy<CoordDrawStrategy>(CoordDrawStategyId));
+	pCoordStrategy->Plot(p,vec,_coord_plotter_rect,_plot_step_x);
+	std::shared_ptr<MnemoDrawStrategy> pMnemoDrawStrategy(_pDrawStrategyContainer->drawStrategy<MnemoDrawStrategy>(MnemoDrawStrategyId));
+	pMnemoDrawStrategy->SetInitialSettings(pDeviceSettings);
+	pMnemoDrawStrategy->Plot(p,vec,_mnemo_plotter_rect,_plot_step_x);
+
+	//PlotMnemo(p,vec,_mnemo_plotter_rect);
 	for(quint8 num_chan=0;num_chan<pDeviceSettings->getChansCount();num_chan++)
 	{
 
@@ -51,19 +53,35 @@ void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,
 		{
 		case TD_TOL:
 			{
-				ThickRowDrawStrategy* thick_draw_strategy=_pDrawStrategyContainer->drawStrategy<ThickRowDrawStrategy>(ThickRowDrawStrategyId);
-				Q_ASSERT(thick_draw_strategy);
-				thick_draw_strategy->SetInitialSettings(pDeviceSettings,num_chan);
-				thick_draw_strategy->Plot(p,vec,_chan_plotter_rect_arr[num_chan],_plot_step_x);
+				
+				std::shared_ptr<ThickRowDrawStrategy> pThickDrawStrategy(_pDrawStrategyContainer->drawStrategy<ThickRowDrawStrategy>(ThickRowDrawStrategyId));
+				Q_ASSERT(pThickDrawStrategy.get());
+				pThickDrawStrategy->SetInitialSettings(pDeviceSettings,num_chan);
+				pThickDrawStrategy->Plot(p,vec,_chan_plotter_rect_arr[num_chan],_plot_step_x);
+			
 			//PlotThickRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
 			}
 			break;
 		case TD_TOL_LAM:
-			PlotLaminationThickRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
+			{
+				std::shared_ptr<ThickLamRowDrawStrategy> pThickLamStartegy(_pDrawStrategyContainer->drawStrategy<ThickLamRowDrawStrategy>(ThickLamRowDrawStrategyId));
+			
+				Q_ASSERT(pThickLamStartegy.get());
+				pThickLamStartegy->SetInitialSettings(pDeviceSettings,num_chan);
+				pThickLamStartegy->Plot(p,vec,_chan_plotter_rect_arr[num_chan],_plot_step_x);
+			
+			//PlotLaminationThickRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
+			}
 			break;
 		case TD_DEF_PROD:
 		case TD_DEF_POPER:
-			PlotDefectRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
+			{
+				std::shared_ptr<DefectRowDrawStrategy> pDefectDrawStrategy(_pDrawStrategyContainer->drawStrategy<DefectRowDrawStrategy>(DefectRowDrawStrategyId));
+				Q_ASSERT(pDefectDrawStrategy.get());
+				pDefectDrawStrategy->SetInitialSettings(pDeviceSettings,num_chan);
+				pDefectDrawStrategy->Plot(p,vec,_chan_plotter_rect_arr[num_chan],_plot_step_x);
+			//PlotDefectRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
+			}
 			break;
 		case TD_B_SCAN:
 			PlotBScanRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
@@ -72,25 +90,27 @@ void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,
 		}
 
 	}
-	PlotBackground(p,rect);
+	PlotBackground(p,rect,pDeviceSettings);
+	
 	}
 	emit hasNewRender(image);
 }
-void RenderThread::MarkOutBackground(const quint8 num_chan)
+void RenderThread::MarkOutBackground(const DeviceSettings* pDeviceSettings)
 {
+	
 	const float margin=1.0;
 	const float coord_row_height=25.0;
 	float y_offset=0.0;
 
 	auto isChannelVisible=[=](quint8 num_chan)->bool
 	{
-		const par_us_t& us=_pDeviceSettings->getChanAmpl(num_chan);
+		const par_us_t& us=pDeviceSettings->getChanAmpl(num_chan);
 		return us.on_us==1;
 	};
 	auto getVisibleChansCount=[=]()->quint8
 	{
 		quint8 vis_count=0;
-		for(int i=0;i<_pDeviceSettings->getChansCount();i++)
+		for(int i=0;i<pDeviceSettings->getChansCount();i++)
 		{
 			if(isChannelVisible(i))
 				vis_count++;
@@ -116,10 +136,10 @@ void RenderThread::MarkOutBackground(const quint8 num_chan)
 	float step_row=static_cast<float>(_height-y_offset)/getVisibleChansCount();
 
 
-	_chan_label_rect_arr.resize(num_chan);
-	_chan_plotter_rect_arr.resize(num_chan);
+	_chan_label_rect_arr.resize(pDeviceSettings->getChansCount());
+	_chan_plotter_rect_arr.resize(pDeviceSettings->getChansCount());
 
-	for(int i=0;i<num_chan;i++)
+	for(int i=0;i<pDeviceSettings->getChansCount();i++)
 	{
 
 		if(isChannelVisible(i))
@@ -140,10 +160,10 @@ void RenderThread::MarkOutBackground(const quint8 num_chan)
 	}
 
 }
-void RenderThread::PlotBackground(QPainter& painter,const QRect& rect)
+void RenderThread::PlotBackground(QPainter& painter,const QRect& rect,const DeviceSettings* pDeviceSettings)
 {
 
-	const quint8 num_chans=_pDeviceSettings->getChansCount();
+	const quint8 num_chans=pDeviceSettings->getChansCount();
 
 
 
@@ -167,7 +187,7 @@ void RenderThread::PlotBackground(QPainter& painter,const QRect& rect)
 	{
 
 
-		DrawLabelChannel(painter,i);
+		DrawLabelChannel(painter,i,pDeviceSettings);
 
 	}
 
@@ -177,20 +197,20 @@ void RenderThread::PlotBackground(QPainter& painter,const QRect& rect)
 	painter.setPen(Qt::black);
 }
 
-void RenderThread::DrawLabelChannel(QPainter&painter,const quint8 num_chan)
+void RenderThread::DrawLabelChannel(QPainter&painter,const quint8 num_chan,const DeviceSettings* pDeviceSettings)
 {
 	QRectF draw_rect=_chan_label_rect_arr[num_chan];
 	if((draw_rect.width()==0)||(draw_rect.height()==0))
 		return;
-	QString chan_name=tr("%1-%2").arg(num_chan+1).arg(_pDeviceSettings->getChanModeName(num_chan));
+	QString chan_name=tr("%1-%2").arg(num_chan+1).arg(pDeviceSettings->getChanModeName(num_chan));
 	painter.save();
-	painter.setPen(_pDeviceSettings->getOscColor("TEXT_COLOR"));
+	painter.setPen(pDeviceSettings->getOscColor("TEXT_COLOR"));
 	//QFont serifFont("Times", 10, QFont::Bold);
 	//painter.setFont(serifFont);
 	painter.drawText(draw_rect,Qt::AlignCenter,chan_name);
-	if(_pDeviceSettings->getSelChanNum()==num_chan)
+	if(pDeviceSettings->getSelChanNum()==num_chan)
 	{
-		QPen pen(_pDeviceSettings->getOscColor("SEL_CHAN_FRAME_COLOR"));
+		QPen pen(pDeviceSettings->getOscColor("SEL_CHAN_FRAME_COLOR"));
 		pen.setWidth(3);
 		pen.setStyle(Qt::DashLine);
 		painter.setPen(pen);
@@ -202,7 +222,7 @@ void RenderThread::DrawLabelChannel(QPainter&painter,const quint8 num_chan)
 
 void RenderThread::PlotCoord(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect)
 {
-
+#if 0
 	/* PrintCoordValueTxt lambda отображает координату value в заданном месте*/
 	const int txtWidth = 30;
 #if 1
@@ -258,15 +278,17 @@ void RenderThread::PlotCoord(QPainter& painter,const std::vector<ElementInfo*>& 
 		}
 	}
 	painter.restore();
+#endif
 }
 
 void RenderThread::PlotMnemo(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect)
 {
+#if 0
 	const int w=rect.width();
 	const int h=rect.height();
 
 	/*SetupMnemoRowDim;PlotMnemoRowsLine lambda в зависимости от выбранного количества слоев, делит виджет на равные части*/
-#if 1
+#if 0
 	auto SetupMnemoRowDim=[]( std::vector<int>& row_base, std::vector<int>& row_height,const int num_mnemo_rows,const float pix_h_step)
 	{
 		row_base[0] = 0;
@@ -295,7 +317,7 @@ void RenderThread::PlotMnemo(QPainter& painter,const std::vector<ElementInfo*>& 
 #endif//SetupMnemoRowDim PlotMnemoRowsLine lambda
 
 	/*PlotThickLevel lambda отрисовывает уровни допустимых толщин сверху вниз:(верх-минимальная толщина;середина-норма;низ-максимальная допустимая тощина)*/
-#if 1
+#if 0
 	auto PlotThickLevel=[=](QPainter& painter,const int curr_y_b,const int curr_height,const float thick_range_coefficient)
 	{
 		const par_thick_t& thick_params=_pDeviceSettings->getThickParams();
@@ -464,7 +486,7 @@ void RenderThread::PlotMnemo(QPainter& painter,const std::vector<ElementInfo*>& 
 #endif//PlotMnemoThickLine lambda
 
 	/*_PlotMnemoElem lambda заполняет уровни суммой дефектов верх-середина-низ;продольный & поперечный - разный цвет и разный "вес" в зависимости от flaw_size*/
-#if 1
+#if 0
 	auto PlotSingleMnemoElem=[=]( QPainter& painter,
 		const ElementInfo* elem_info,
 		const int layer,
@@ -629,12 +651,13 @@ void RenderThread::PlotMnemo(QPainter& painter,const std::vector<ElementInfo*>& 
 
 	painter.restore();
 
-
+#endif
 
 }
 
 void RenderThread::PlotThickRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan)
 {
+#if 0
 	/**/
 	bool correct_mode=_pDeviceSettings->getChanMode(num_chan)==TD_TOL;
 
@@ -1919,10 +1942,12 @@ void RenderThread::PlotThickRow(QPainter& painter,const std::vector<ElementInfo*
 	PlotThick(painter,vec,pen1,pen2);
 	PlotThickErrorSemiTransparent(painter,vec);
 	painter.restore();
+#endif
 }
 
 void RenderThread::PlotLaminationThickRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan)
 {
+#if 0
 	bool correct_mode=_pDeviceSettings->getChanMode(num_chan)==TD_TOL_LAM;
 
 	if((!correct_mode)||(rect.height()==0))return;
@@ -3181,11 +3206,12 @@ void RenderThread::PlotLaminationThickRow(QPainter& painter,const std::vector<El
 		PlotLamThick(painter,vec,pen1,pen2);
 	}
 		painter.restore();
-
+#endif
 }
 
 void RenderThread::PlotDefectRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan)
 {
+#if 0
 	if(rect.height()==0)return;
 	const par_strb_t *strb_par = _pDeviceSettings->getAmplStrobArray(num_chan);
 	const par_strb_info_t *strb_chan_info = _pDeviceSettings->getStrobInfoArray(num_chan);
@@ -3508,6 +3534,7 @@ void RenderThread::PlotDefectRow(QPainter& painter,const std::vector<ElementInfo
 	}
 
 	painter.restore();
+#endif
 
 }
 void RenderThread::PlotBScanRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan)
@@ -3537,10 +3564,10 @@ int RenderThread::get_visible_count()
 	return _visible_elements;
 }
 
-void RenderThread::pointInRect(const QPointF& pos,int* num_chan)
+void RenderThread::pointInRect(const QPointF& pos,int* num_chan,const DeviceSettings* pDeviceSettings)
 {
 
-	for(int i=0;i<_pDeviceSettings->getChansCount();i++)
+	for(int i=0;i<pDeviceSettings->getChansCount();i++)
 	{
 		if((_chan_plotter_rect_arr[i].contains(pos))||(_chan_label_rect_arr[i].contains(pos)))
 		{
@@ -3549,24 +3576,24 @@ void RenderThread::pointInRect(const QPointF& pos,int* num_chan)
 		}
 	}
 }
-void RenderThread::SetColors()
-{
-	_mnemo_background_color=_pDeviceSettings->getOscColor("MNEMO_BACKGROUND");
-	_error_color=_pDeviceSettings->getOscColor("ERROR");
-	_thick_color=_pDeviceSettings->getOscColor("THICK_COLOR");
-	_sufficient_condition_color=_pDeviceSettings->getOscColor("SUFFICIENT_CONDITION");
-	_sep_line_color=_pDeviceSettings->getOscColor("SEP_LINE_COLOR");
-	_flaw_poper_color=_pDeviceSettings->getOscColor("FLAW_POPER_COLOR");
-	_flaw_prod_color=_pDeviceSettings->getOscColor("FLAW_PROD_COLOR");
-	_osc_background_color=_pDeviceSettings->getOscColor("OSC_BACKGROUND");
-
-	_ak_fill_color=_pDeviceSettings->getOscColor(QString("AK_FILL_COLOR"));
-	_error_flag_incorrect_color=_pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_INCORRECT"));
-	_error_flag_data_skip_color=_pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_DATA_SKIP"));
-	_error_flag_no_ak_color=_pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_NO_AK"));
-	_error_flag_lamination_color=_pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_LAMINATION"));
-
-}
+//void RenderThread::SetColors()
+//{
+//	_mnemo_background_color=_pDeviceSettings->getOscColor("MNEMO_BACKGROUND");
+//	_error_color=_pDeviceSettings->getOscColor("ERROR");
+//	_thick_color=_pDeviceSettings->getOscColor("THICK_COLOR");
+//	_sufficient_condition_color=_pDeviceSettings->getOscColor("SUFFICIENT_CONDITION");
+//	_sep_line_color=_pDeviceSettings->getOscColor("SEP_LINE_COLOR");
+//	_flaw_poper_color=_pDeviceSettings->getOscColor("FLAW_POPER_COLOR");
+//	_flaw_prod_color=_pDeviceSettings->getOscColor("FLAW_PROD_COLOR");
+//	_osc_background_color=_pDeviceSettings->getOscColor("OSC_BACKGROUND");
+//
+//	_ak_fill_color=_pDeviceSettings->getOscColor(QString("AK_FILL_COLOR"));
+//	_error_flag_incorrect_color=_pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_INCORRECT"));
+//	_error_flag_data_skip_color=_pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_DATA_SKIP"));
+//	_error_flag_no_ak_color=_pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_NO_AK"));
+//	_error_flag_lamination_color=_pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_LAMINATION"));
+//
+//}
 void RenderThread::setPlotStep(float plot_step)
 {
 	_plot_step_x=plot_step;
@@ -3599,62 +3626,3 @@ void RenderThread::PlotErrSemiTransparent(QPainter & painter,	const quint8 &defe
 		painter.fillRect(QRectF(curr_x, curr_y_b, next_x - curr_x, curr_height), _error_flag_incorrect_color );
 }
 
-void CoordPlotStrategy::operator()(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect)
-{
-	const float _plot_step_x=3.0;
-
-#if 1
-	auto PrintCoordValueTxt=[=](QPainter& painter,const float curr_x,const float pixmap_height,const int value)
-	{
-		QRectF rectTxt(curr_x+2,pixmap_height/50,txtWidth,pixmap_height-pixmap_height/50);
-		QString strValue=QString::number(value,10);
-		painter.drawText(rectTxt,Qt::AlignLeft,strValue);
-
-	};
-#endif
-	painter.save();
-	painter.translate(rect.topLeft());
-	painter.translate(3,2);
-	const float pixmap_width=rect.width();
-	const float pixmap_height=rect.height();
-
-	const float left_tab=0.0f;
-	float curr_x = left_tab;
-
-	if(vec.size()>0)
-	{
-
-		for (int i=0;i<vec.size();i++)
-		{
-
-
-			if(vec.at(i)->filled)
-			{
-
-
-				if(vec.at(i)->coord%10==0)
-				{
-					QLineF line( curr_x,  pixmap_height/4, curr_x,  pixmap_height);
-					painter.drawLine(line);
-					if((curr_x+txtWidth)<pixmap_width)
-						PrintCoordValueTxt(painter,curr_x,pixmap_height,vec.at(i)->coord);
-				}
-				else if(vec.at(i)->coord%5==0)
-				{
-					QLineF line( curr_x,  4*pixmap_height/7, curr_x,  pixmap_height);
-					painter.drawLine(line);
-				}
-				else
-				{
-					QLineF line( curr_x,  3*pixmap_height/4, curr_x,  pixmap_height);
-					painter.drawLine(line);
-				}
-			}
-
-			curr_x+=_plot_step_x;
-
-		}
-	}
-	painter.restore();
-
-}

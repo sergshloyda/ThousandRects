@@ -17,7 +17,7 @@ public:
 	void Plot();
 	void setDataProcessor(ResultData* pResData)
 	{
-		_pDataArray=pResData;
+		_pResultDataProcessor=pResData;
 	}
 	void setDeviceSettings(DeviceSettings* pDevSet)
 	{
@@ -31,7 +31,7 @@ protected:
 private:
 	QImage _image;
 	RenderThread* render;
-	ResultData* _pDataArray;
+	ResultData* _pResultDataProcessor;
 	DeviceSettings* _pDeviceSettings;
 	
 

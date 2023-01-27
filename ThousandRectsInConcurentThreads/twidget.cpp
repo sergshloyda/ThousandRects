@@ -43,11 +43,11 @@ void TWidget::Plot()
 	render->setPlotStep(3.0);
 	render->calc_visible_elements(r);
 	int request_size=render->get_visible_count();
-	_pDataArray->set_requested_size(request_size);
-	vec=_pDataArray->collect_last_values();
+	_pResultDataProcessor->set_requested_size(request_size);
+	vec=_pResultDataProcessor->collect_last_values();
 	
 
-	QtConcurrent::run(render,&RenderThread::paint,vec,r,_pDeviceSettings,_pDataArray->get_mutex_ptr());
+	QtConcurrent::run(render,&RenderThread::paint,vec,r,_pDeviceSettings,_pResultDataProcessor->get_mutex_ptr());
 
 }
 
@@ -64,7 +64,7 @@ void TWidget::mousePressEvent(QMouseEvent *event)
 	switch (event->button()) {
 	case Qt::LeftButton:
 		{
-			render->pointInRect(event->pos(),&num_chan);
+			render->pointInRect(event->pos(),&num_chan,_pDeviceSettings);
 
 			break;
 		}

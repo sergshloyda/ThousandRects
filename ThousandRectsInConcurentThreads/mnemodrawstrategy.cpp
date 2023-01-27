@@ -1,7 +1,7 @@
 #include "mnemodrawstrategy.h"
 
-MnemoDrawStrategy::MnemoDrawStrategy(QObject *parent)
-	: BaseDrawRowStrategy(parent)
+MnemoDrawStrategy::MnemoDrawStrategy()
+	: BaseDrawStrategy()
 {
 
 }

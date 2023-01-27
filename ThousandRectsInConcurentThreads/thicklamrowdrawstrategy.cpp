@@ -1,6 +1,6 @@
-#include "thickrowdrawstrategy.h"
+#include "thicklamrowdrawstrategy.h"
 #include "ThickElement.h"
-ThickRowDrawStrategy::ThickRowDrawStrategy()
+ThickLamRowDrawStrategy::ThickLamRowDrawStrategy()
 	: BaseDrawStrategy(),
 	left_tab(1.0),
 	max_polig_len(20),
@@ -10,17 +10,20 @@ ThickRowDrawStrategy::ThickRowDrawStrategy()
 
 }
 
-ThickRowDrawStrategy::~ThickRowDrawStrategy()
+ThickLamRowDrawStrategy::~ThickLamRowDrawStrategy()
 {
 
 }
-void ThickRowDrawStrategy::Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x)
+
+void ThickLamRowDrawStrategy::Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x)
 {
 
 	
-	bool correct_mode=_pDeviceSettings->getChanMode(_num_chan)==TD_TOL;
+	bool correct_mode=_pDeviceSettings->getChanMode(_num_chan)==TD_TOL_LAM;
 
 	if((!correct_mode)||(rect.height()==0))return;
+
+	const par_strb_t *strb_par = _pDeviceSettings->getAmplStrobArray(_num_chan);
 	QPen pen1;
 	pen1.setWidth(plot_line_W);
 	QPen pen2(pen1);
@@ -38,141 +41,134 @@ void ThickRowDrawStrategy::Plot(QPainter& painter,const std::vector<ElementInfo*
 	painter.save();
 	painter.translate(rect.topLeft());
 	
-	PlotThickStrAmpl(painter,vec,pen1,pen2,_pDeviceSettings->getOscColor("THICK_STROB_AMPL_COLOR"),plot_step_x,plot_step_y,pixmap_height,pixmap_width);
-	PlotThick(painter,vec,pen1,pen2,pixmap_height,pixmap_width,plot_step_x);
-	PlotThickErrorSemiTransparent(painter,vec,pixmap_height,plot_step_x);
-
-	painter.restore();
-}
-void ThickRowDrawStrategy::PlotThickStrAmpl(QPainter & painter, 
-	const std::vector<ElementInfo*>& vec, QPen &pen1, QPen &pen2, 
-	const QColor &plot_col,const float plot_step_x,const float plot_step_y,const float base_y,const float pixmap_width )
+	
+		if(strb_par[2].on_strb)	// отрисовка развёртки амплитуды сигнала в этом стробе
 	{
-		const par_strb_t *strb_par = _pDeviceSettings->getAmplStrobArray(_num_chan);
+		PlotLaminThickStrAmpl(painter,vec,strb_par,pen1,pen2,_pDeviceSettings->getOscColor("THICK_STROB_AMPL_COLOR"),plot_step_x,plot_step_y,pixmap_height,pixmap_width);
+		PlotLamThick(painter,vec,pen1,pen2,pixmap_height,pixmap_width,plot_step_x);
+	}
+		painter.restore();
+}
+void ThickLamRowDrawStrategy::PlotLaminThickStrAmpl(QPainter & painter, 
+	const std::vector<ElementInfo*>& vec, 
+	const par_strb_t *strb_par,
+	QPen &pen1, QPen &pen2,const QColor &plot_col,
+	const float plot_step_x,const float plot_step_y,const float base_y,const float pixmap_width )
+{
 
-		float curr_x = left_tab;
-		float curr_x_middle = left_tab + plot_step_x/2;
-		//float base_y = pixmap_height;
+	//const par_strb_t *strb_par = _pDeviceSettings->getAmplStrobArray(_num_chan);
+	float curr_x = left_tab;
+	float curr_x_middle = left_tab + plot_step_x/2;
+	//float base_y = pixmap_height;
 
-		const quint8 strob_porog = strb_par[1].por;			// или 0 ?
-
-
-		QPolygonF poligon;
-
-
-		pen1.setColor(plot_col);
-		pen2.setColor(plot_col);
-
-		QBrush strob_brush(plot_col, Qt::SolidPattern);
-		painter.setBrush(strob_brush);
-
-
-		float porog = base_y - strob_porog * plot_step_y;
-		painter.setPen(pen2);
-		QLineF dash_line( left_tab + 1,  porog, pixmap_width - 1,  porog);
-		painter.drawLine(dash_line);
+	const quint8 strob_porog = strb_par[2].por;
 
 
-		if(vec.size() <= 1)
-			return;
+	QPolygonF poligon;
 
 
-		painter.setPen(pen1);
+	pen1.setColor(plot_col);
+	pen2.setColor(plot_col);
 
-		bool poligon_started = false;
+	QBrush strob_brush(plot_col, Qt::SolidPattern);
+	painter.setBrush(Qt::green);
+
+
+	float porog = base_y - strob_porog * plot_step_y;
+	painter.setPen(pen2);
+	QLineF dash_line( left_tab + 1,  porog, pixmap_width - 1,  porog);
+	painter.drawLine(dash_line);
+
+
+	if(vec.size() <= 1)
+		return;
+
+
+	painter.setPen(pen1);
+
+	bool poligon_started = false;
 
 
 
-		for(int j = 0; j < vec.size() - 1; j++)
+	for(int j = 0; j < vec.size() - 1; j++)
+	{
+		
+
+
+			ThickLamElement* prev_thick_lam_elem=static_cast<ThickLamElement*>(vec[j]->chan_info_array[_num_chan]);
+			ThickLamElement* next_thick_lam_elem=static_cast<ThickLamElement*>(vec[j+1]->chan_info_array[_num_chan]);
+		if(prev_thick_lam_elem->filled && next_thick_lam_elem->filled)
 		{
-			//ThickElement* thick_elem;
+			quint8 prev_val = prev_thick_lam_elem->strob_data[2].ampl;
+			quint8 next_val = next_thick_lam_elem->strob_data[2].ampl;
 
+			QLineF line( curr_x,  base_y - prev_val * plot_step_y, curr_x + plot_step_x,  base_y - next_val * plot_step_y);
 
-			ThickElement* prev_thick_elem=static_cast<ThickElement*>(vec[j]->chan_info_array[_num_chan]);
-			ThickElement* next_thick_elem=static_cast<ThickElement*>(vec[j+1]->chan_info_array[_num_chan]);
-			if(prev_thick_elem->filled && next_thick_elem->filled)
+			if(!poligon_started)
+				painter.drawLine(line);
+
+			if( strob_porog < prev_val )
 			{
-				quint8 prev_val = prev_thick_elem->strob_data[2].ampl;
-				quint8 next_val = next_thick_elem->strob_data[2].ampl;
-
-				QLineF line( curr_x,  base_y - prev_val * plot_step_y, curr_x + plot_step_x,  base_y - next_val * plot_step_y);
-
-				if(!poligon_started)
-					painter.drawLine(line);
-
-				if( strob_porog < prev_val )
+				if( strob_porog < next_val )
 				{
-					if( strob_porog < next_val )
+					if(!poligon_started)
 					{
-						if(!poligon_started)
-						{
-							poligon << QPointF(curr_x, porog) << line.p1();
-							poligon_started = true;
-						}
-
-						poligon << line.p2();
-
-
-						if(j % max_polig_len == 0)
-						{
-							QPointF mid_point(curr_x + plot_step_x, porog);
-							poligon << mid_point;
-							painter.drawPolygon(poligon, fill_rule);
-							poligon.resize(0);
-							poligon << mid_point << line.p2();
-						}
+						poligon << QPointF(curr_x, porog) << line.p1();
+						poligon_started = true;
 					}
-					else
-					{
 
-						if(poligon_started)
-						{
-							float base_x = curr_x +  plot_step_x * (strob_porog - prev_val) / (next_val - prev_val);
-							poligon << QPointF(base_x, porog);
-							painter.drawPolygon(poligon,fill_rule);
-							poligon.resize(0);
-							poligon_started = false;
-							painter.drawLine(line);
-						}
+					poligon << line.p2();
+
+				
+					if(j % max_polig_len == 0)
+					{
+						QPointF mid_point(curr_x + plot_step_x, porog);
+						poligon << mid_point;
+						painter.drawPolygon(poligon, fill_rule);
+						poligon.resize(0);
+						poligon << mid_point << line.p2();
 					}
 				}
 				else
 				{
-					if( strob_porog < next_val )
+
+					if(poligon_started)
 					{
-						if(!poligon_started)
-						{
-							float base_x = curr_x + plot_step_x *(strob_porog - prev_val)/(next_val - prev_val);
-							poligon << QPointF(base_x, porog) << line.p2();
-							poligon_started = true;
-						}
-					}
-					else
-					{
-						// не закрашиваем
-						if(poligon_started)
-						{
-							poligon << QPointF(curr_x, porog);
-							painter.drawPolygon(poligon, fill_rule);
-							poligon.resize(0);
-							poligon_started = false;
-							painter.drawLine(line);
-						}
+						float base_x = curr_x +  plot_step_x * (strob_porog - prev_val) / (next_val - prev_val);
+						poligon << QPointF(base_x, porog);
+						painter.drawPolygon(poligon,fill_rule);
+						poligon.resize(0);
+						poligon_started = false;
+						painter.drawLine(line);
 					}
 				}
 			}
-			else if(poligon_started)
+			else
 			{
-				poligon << QPointF(curr_x, porog);
-				painter.drawPolygon(poligon,fill_rule);
-				poligon.clear();
-				poligon_started = false;
+				if( strob_porog < next_val )
+				{
+					if(!poligon_started)
+					{
+						float base_x = curr_x + plot_step_x *(strob_porog - prev_val)/(next_val - prev_val);
+						poligon << QPointF(base_x, porog) << line.p2();
+						poligon_started = true;
+					}
+				}
+				else
+				{
+						// не закрашиваем
+					if(poligon_started)
+					{
+						poligon << QPointF(curr_x, porog);
+						painter.drawPolygon(poligon, fill_rule);
+						poligon.resize(0);
+						poligon_started = false;
+						painter.drawLine(line);
+					}
+				}
 			}
-
-			curr_x += plot_step_x;
 		}
-
-		if(poligon_started)
+		else if(poligon_started)
 		{
 			poligon << QPointF(curr_x, porog);
 			painter.drawPolygon(poligon,fill_rule);
@@ -180,22 +176,30 @@ void ThickRowDrawStrategy::PlotThickStrAmpl(QPainter & painter,
 			poligon_started = false;
 		}
 
-		poligon.clear();
+		curr_x += plot_step_x;
 	}
 
-void ThickRowDrawStrategy::PlotThick(QPainter & painter, const std::vector<ElementInfo*>& vec, QPen &pen1, QPen &pen2,const float pixmap_height,const float pixmap_width,const float plot_step_x)
+	if(poligon_started)
+	{
+		poligon << QPointF(curr_x, porog);
+		painter.drawPolygon(poligon,fill_rule);
+		poligon.clear();
+		poligon_started = false;
+	}
+
+	poligon.clear();
+}
+
+
+
+void  ThickLamRowDrawStrategy::PlotLamThick(QPainter & painter, const std::vector<ElementInfo*>& vec, 
+	QPen &pen1, QPen &pen2,const float pixmap_height,const float pixmap_width,const float plot_step_x)
 	{
 		const par_thick_t& thick_params=_pDeviceSettings->getThickParams();
 		float norm_val = thick_params.thick*0.01f;
 		const quint8 scale_to_limits=_pDeviceSettings->getViewPar().scale_thick_to_limits;
 
-		/**norm_val = thick->thick * 0.01f;
-		*pp_thick = thick;
-		*pp_scale_to_limits = scale_to_limits;
-		processor.GetThickParams(&norm_val, &thick_params, &scale_to_limits);*/
-
-
-
+	
 		float por_pos = 0;
 		float por_neg = 0;
 
@@ -336,7 +340,7 @@ void ThickRowDrawStrategy::PlotThick(QPainter & painter, const std::vector<Eleme
 		{
 			bool thick_filled = false;
 
-			ThickElement* thick_elem=static_cast<ThickElement*>(vec[j]->chan_info_array[_num_chan]);
+			ThickLamElement* thick_elem=static_cast<ThickLamElement*>(vec[j]->chan_info_array[_num_chan]);
 			if(thick_elem->filled)
 			{
 				if(thick_elem->thick.min_thick <= thick_elem->thick.max_thick)
@@ -1272,61 +1276,3 @@ void ThickRowDrawStrategy::PlotThick(QPainter & painter, const std::vector<Eleme
 	}
 
 
-void ThickRowDrawStrategy::PlotThickErrorSemiTransparent (QPainter& painter,const std::vector<ElementInfo*>& vec,const float pixmap_height,const float plot_step_x)
-{
-		float curr_x = left_tab;
-		float base_y = pixmap_height;
-
-		float next_x = curr_x + plot_step_x/2;
-
-		for(int i = 0; i < vec.size(); i++)
-		{
-			ThickElement* thick_elem=static_cast<ThickElement*>(vec[i]->chan_info_array[_num_chan]);
-			if(thick_elem->filled)
-			{
-
-				PlotErrSemiTransparent(painter, thick_elem->error_flags, curr_x, next_x, 0, pixmap_height);
-			}
-
-			curr_x = next_x;
-			next_x = curr_x + plot_step_x;
-		}
-}
-
-//PlotThick(QPainter & painter, const std::vector<ElementInfo*>& vec, QPen &pen1, QPen &pen2)
-
-//void ThickRowDrawStrategy::SetInitialSettings(const DeviceSettings* pDeviceSettings,const quint8 num_chan)
-//{
-//	_pDeviceSettings=pDeviceSettings;
-//	_num_chan=num_chan;
-//	_error_flag_incorrect_color=pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_INCORRECT"));
-//	_error_flag_data_skip_color=pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_DATA_SKIP"));
-//	_error_flag_no_ak_color=pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_NO_AK"));
-//	_error_flag_lamination_color=pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_LAMINATION"));
-//}
-//void ThickRowDrawStrategy::PlotErrSemiTransparent(QPainter & painter,	const quint8 &defect_flag,const float curr_x,const float next_x,const int curr_y_b,const int curr_height)
-//{
-//	if((defect_flag & (ERROR_FLAG_NO_AK|ERROR_FLAG_LAMINATION)) == (ERROR_FLAG_NO_AK|ERROR_FLAG_LAMINATION))
-//	{
-//		// вверху - расслоение, ниже - потеря АК
-//
-//		painter.fillRect(QRectF(curr_x, curr_y_b, next_x - curr_x, curr_height/2), _error_flag_lamination_color );
-//		painter.fillRect(QRectF(curr_x, curr_y_b + curr_height/2, next_x - curr_x, curr_height/2), _error_flag_no_ak_color );
-//	}
-//	else
-//	{
-//		if(defect_flag & ERROR_FLAG_LAMINATION)
-//			painter.fillRect(QRectF(curr_x, curr_y_b, next_x - curr_x, curr_height), _error_flag_lamination_color );
-//
-//		if(defect_flag & ERROR_FLAG_NO_AK)
-//			painter.fillRect(QRectF(curr_x, curr_y_b, next_x - curr_x, curr_height), _error_flag_no_ak_color );
-//	}
-//
-//
-//
-//
-//	if(defect_flag & ERROR_FLAG_DATA_SKIP)
-//		painter.fillRect(QRectF(curr_x, curr_y_b, next_x - curr_x, curr_height), _error_flag_data_skip_color );
-//	if(defect_flag & ERROR_FLAG_INCORRECT)
-//		painter.fillRect(QRectF(curr_x, curr_y_b, next_x - curr_x, curr_height), _error_flag_incorrect_color );
-//}

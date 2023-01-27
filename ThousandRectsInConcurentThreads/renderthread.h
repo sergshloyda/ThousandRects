@@ -13,22 +13,15 @@
 
 #define NUM_EXTRA_POR NUM_STRBS_EXTRA+1
 #define NUM_STROB_AK 0
-class CoordPlotStrategy
-{
-	static const int txtWidth = 30;
-
-public:
-
-	void operator()(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect);
-};
-
 class RenderThread : public QObject
 {
 	Q_OBJECT
 		enum DrawStrategy{
 			CoordDrawStategyId,
 			MnemoDrawStrategyId,
-			ThickRowDrawStrategyId
+			ThickRowDrawStrategyId,
+			ThickLamRowDrawStrategyId,
+			DefectRowDrawStrategyId
 	};
 
 public:
@@ -39,12 +32,12 @@ public:
 	void paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex) ;
 	void calc_visible_elements(const QRect& rect);
 	int get_visible_count();
-	void pointInRect(const QPointF& pos,int* num_chan);
+	void pointInRect(const QPointF& pos,int* num_chan,const DeviceSettings* pDeviceSettings);
 	void setPlotStep(float plot_step);
 private:
-	void MarkOutBackground(const quint8 num_chan);
-	void PlotBackground(QPainter& painter,const QRect& rect);
-	void DrawLabelChannel(QPainter&painter,const quint8 num_chan);
+	void MarkOutBackground(const DeviceSettings* pDeviceSettings);
+	void PlotBackground(QPainter& painter,const QRect& rect,const DeviceSettings* pDeviceSettings);
+	void DrawLabelChannel(QPainter&painter,const quint8 num_chan,const DeviceSettings* pDeviceSettings);
 	void PlotMnemo(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect);
 	void PlotCoord(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect);
 	void PlotThickRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan);
@@ -53,7 +46,7 @@ private:
 	void PlotBScanRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan);
 
 	void PlotErrSemiTransparent(QPainter & painter,	const quint8 &defect_flag,const float curr_x,const float next_x,const int curr_y_b,const int curr_height);
-	void SetColors();
+	//void SetColors();
 private:
 
 	//QImage _image;
@@ -68,7 +61,7 @@ private:
 	QRectF _mnemo_plotter_rect;
 	std::vector<QRectF> _chan_label_rect_arr;
 	std::vector<QRectF> _chan_plotter_rect_arr; 
-	const DeviceSettings* _pDeviceSettings;
+	//const DeviceSettings* _pDeviceSettings;
 
 	const int _label_txt_margin;
 

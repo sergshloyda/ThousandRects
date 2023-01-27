@@ -1,7 +1,7 @@
 #include "coorddrawstrategy.h"
 
-CoordDrawStrategy::CoordDrawStrategy(QObject *parent)
-	: BaseDrawRowStrategy(parent)
+CoordDrawStrategy::CoordDrawStrategy()
+	: BaseDrawStrategy()
 {
 
 }

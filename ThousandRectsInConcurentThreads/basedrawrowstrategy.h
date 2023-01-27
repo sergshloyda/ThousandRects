@@ -6,13 +6,13 @@
 #include "element_info.h"
 #include "devicesettings.h"
 #include "qcolor.h"
-class BaseDrawRowStrategy : public QObject
+class BaseDrawStrategy : public QObject
 {
 	Q_OBJECT
 
 public:
-	BaseDrawRowStrategy(QObject *parent);
-	~BaseDrawRowStrategy();
+	BaseDrawStrategy(QObject *parent=0);
+	~BaseDrawStrategy();
 
 	virtual void Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x)=0;
 	void SetInitialSettings(const DeviceSettings* pDeviceSettings,quint8 num_chan=-1);
@@ -32,6 +32,8 @@ protected:
 	QColor _error_flag_data_skip_color;
 	QColor _error_flag_no_ak_color;
 	QColor _error_flag_lamination_color;
+
+	static const quint8 MaxAmpl=255;
 
 	quint8 _num_chan;
 	const DeviceSettings* _pDeviceSettings;

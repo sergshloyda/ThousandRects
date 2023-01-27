@@ -48,7 +48,7 @@ void ThousandRectsInConcurentThreads::on_pushButton_clicked()
 	else
 	{
 		timer->start(60);
-		redraw_timer->start(25);
+		redraw_timer->start(60);
 		ui.pushButton->setText("Stop");
 	}
 

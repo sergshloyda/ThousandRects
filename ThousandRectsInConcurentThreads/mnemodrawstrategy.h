@@ -3,12 +3,12 @@
 
 #include <QObject>
 #include "basedrawrowstrategy.h"
-class MnemoDrawStrategy : public BaseDrawRowStrategy
+class MnemoDrawStrategy : public BaseDrawStrategy
 {
 	Q_OBJECT
 
 public:
-	Q_INVOKABLE MnemoDrawStrategy(QObject *parent=0);
+	Q_INVOKABLE MnemoDrawStrategy();
 	~MnemoDrawStrategy();
 	virtual void Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x) override;
 	//void SetInitialSettings(const DeviceSettings* pDeviceSettings);

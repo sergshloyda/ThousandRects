@@ -5,12 +5,12 @@
 #include "qpainter.h"
 #include "element_info.h"
 #include "basedrawrowstrategy.h"
-class CoordDrawStrategy : public BaseDrawRowStrategy
+class CoordDrawStrategy : public BaseDrawStrategy
 {
 	Q_OBJECT
 
 public:
-	Q_INVOKABLE CoordDrawStrategy(QObject *parent=0);
+	Q_INVOKABLE CoordDrawStrategy();
 	~CoordDrawStrategy();
 	void Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x);
 private:

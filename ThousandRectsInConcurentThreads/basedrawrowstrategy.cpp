@@ -1,16 +1,16 @@
 #include "basedrawrowstrategy.h"
 
-BaseDrawRowStrategy::BaseDrawRowStrategy(QObject *parent)
+BaseDrawStrategy::BaseDrawStrategy(QObject *parent)
 	: QObject(parent)
 {
 
 }
 
-BaseDrawRowStrategy::~BaseDrawRowStrategy()
+BaseDrawStrategy::~BaseDrawStrategy()
 {
 
 }
-void BaseDrawRowStrategy::SetInitialSettings(const DeviceSettings* pDeviceSettings,quint8 num_chan)
+void BaseDrawStrategy::SetInitialSettings(const DeviceSettings* pDeviceSettings,quint8 num_chan)
 {
 	_pDeviceSettings=pDeviceSettings;
 	_mnemo_background_color=_pDeviceSettings->getOscColor("MNEMO_BACKGROUND");
@@ -31,7 +31,7 @@ void BaseDrawRowStrategy::SetInitialSettings(const DeviceSettings* pDeviceSettin
 	_num_chan=num_chan;
 }
 
-void BaseDrawRowStrategy::PlotErrSemiTransparent(QPainter & painter,	const quint8 &defect_flag,const float curr_x,const float next_x,const int curr_y_b,const int curr_height)
+void BaseDrawStrategy::PlotErrSemiTransparent(QPainter & painter,	const quint8 &defect_flag,const float curr_x,const float next_x,const int curr_y_b,const int curr_height)
 {
 	if((defect_flag & (ERROR_FLAG_NO_AK|ERROR_FLAG_LAMINATION)) == (ERROR_FLAG_NO_AK|ERROR_FLAG_LAMINATION))
 	{

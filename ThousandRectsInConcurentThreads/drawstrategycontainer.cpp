@@ -10,12 +10,10 @@ DrawStrategyContainer::~DrawStrategyContainer()
 {
 
 }
-void DrawStrategyContainer::registerDrawStrategy(const quint8 idDrawStrategy,const QMetaObject* meta,QObject* pParent)
+void DrawStrategyContainer::registerDrawStrategy(const quint8 idDrawStrategy,const QMetaObject* meta)
 {
 
-	Q_ASSERT(meta->constructorCount()>0);
-	QObject* newObject=meta->newInstance(Q_ARG(QObject*,pParent));
-	_objById.insert(idDrawStrategy,newObject);
+	_metaByName.insert(idDrawStrategy,meta);
 
 }
 
@@ -23,7 +21,10 @@ QObject* DrawStrategyContainer::drawStrategy(const quint8 idDrawStrategy)
 
 {
 	
-	Q_ASSERT(_objById.contains(idDrawStrategy));
-
-	return _objById.value(idDrawStrategy);
+	Q_ASSERT(_metaByName.contains(idDrawStrategy));
+	const QMetaObject* meta=_metaByName.value(idDrawStrategy);
+	Q_ASSERT(meta->constructorCount()>0);
+	/*Из-за того что обьекты будут создаваться в другом потоке, мы не можем передать parent в конструкторе , позаботиться об удалении самим*/
+	QObject* newObject=meta->newInstance();
+	return newObject;
 }

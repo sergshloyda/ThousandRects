@@ -21,7 +21,8 @@ class RenderThread : public QObject
 			MnemoDrawStrategyId,
 			ThickRowDrawStrategyId,
 			ThickLamRowDrawStrategyId,
-			DefectRowDrawStrategyId
+			DefectRowDrawStrategyId,
+			BScanRowDrawStrategyId
 	};
 
 public:

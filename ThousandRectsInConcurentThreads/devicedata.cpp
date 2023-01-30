@@ -56,7 +56,10 @@ void DeviceData::prepareData(QByteArray& data,const DeviceSettings* device_setti
 		{
 			if(device_settings->getChanMode(j)==TD_B_SCAN)
 			{
-				memset(reinterpret_cast<b_scan_us_struct_t*>((p_begin_elem_data+chan_offset))->scan,0,sizeof(b_scan_us_struct_t));
+				quint8 b_scan_ampl[NUM_B_AMP];
+				for(int i=0;i<NUM_B_AMP;i++)
+					b_scan_ampl[i]=qrand()%128;
+				memcpy(reinterpret_cast<b_scan_us_struct_t*>((p_begin_elem_data+chan_offset))->scan,b_scan_ampl,sizeof(b_scan_us_struct_t));
 				chan_offset+=sizeof(b_scan_us_struct_t);
 			}
 			else

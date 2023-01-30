@@ -14,6 +14,8 @@ ThousandRectsInConcurentThreads::ThousandRectsInConcurentThreads(QWidget *parent
 	_pDeviceSettings->loadInitialSettings();
 	//включим для 1 канала экстра порог 2 строба
 	_pDeviceSettings->getStrobInfoPtr(0,1)->on_extra_por=ON;
+
+	
 	load_settings();
 	timer=new QTimer(this);
 	redraw_timer=new QTimer(this);
@@ -95,6 +97,9 @@ void ThousandRectsInConcurentThreads::received_data()
 		{
 			if(_pDeviceSettings->getChanMode(ii)==TD_B_SCAN)
 			{
+				//для B скана установим порог для тестирования
+				_pDeviceSettings->setBScanPorog(ii,72);
+
 				b_scan_us_struct_t b_scan_struct;
 				DataStructCreator::FillB_ScanStruct(p_res_data,info_header,i,offset,&b_scan_struct);
 

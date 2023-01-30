@@ -51,7 +51,7 @@ const quint16 DeviceSettings::chan_rej[NUM_CHANS] =	{
 												TD_DEF_PROD,
 												TD_TOL,
 												TD_TOL_LAM,
-												TD_DEF_PROD,
+												TD_B_SCAN,
 												TD_DEF_PROD,
 												TD_DEF_PROD,
 												TD_DEF_POPER,
@@ -123,7 +123,8 @@ par_trk_t &trk_par = contr_par.trk_par;
 		probe_par.alpha = 0;				// угол ввода
 		probe_par.cc = 5900;					// скорость звука
 
-
+		cn_info.a_step_count = DEF_B_SCAN_LEN;
+		cn_info.a_k_color = 0;
 
 		for(int j = 0; j < NUM_STRBS; j++)
 		{
@@ -1147,4 +1148,12 @@ void DeviceSettings::setUsedLayers(const quint8 layers)
 void DeviceSettings::setControlStep(const quint8 control_step)
 {
 	_par_device.contr_par.control_step=control_step;
+}
+void DeviceSettings::setBScanLen(const quint8 num_chan,const quint8 new_val)
+{
+	_par_device.contr_par.trk_par.cn_list.cn_info[num_chan].a_step_count=new_val;
+}
+void DeviceSettings::setBScanPorog(const quint8 num_chan,const quint8 new_val)
+{
+	_par_device.contr_par.trk_par.cn_list.cn_info[num_chan].a_k_color=new_val;
 }

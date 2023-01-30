@@ -6,6 +6,7 @@
 #include "thickrowdrawstrategy.h"
 #include "thicklamrowdrawstrategy.h"
 #include "defectrowdrawstrategy.h"
+#include "bscanrowdrawstrategy.h"
 #include <memory>
 
 
@@ -18,6 +19,7 @@ RenderThread::RenderThread(QObject *parent)
 	_pDrawStrategyContainer->registerDrawStrategy(ThickRowDrawStrategyId,CLASSMETA(ThickRowDrawStrategy));
 	_pDrawStrategyContainer->registerDrawStrategy(ThickLamRowDrawStrategyId,CLASSMETA(ThickLamRowDrawStrategy));
 	_pDrawStrategyContainer->registerDrawStrategy(DefectRowDrawStrategyId,CLASSMETA(DefectRowDrawStrategy));
+	_pDrawStrategyContainer->registerDrawStrategy(BScanRowDrawStrategyId,CLASSMETA(BScanRowDrawStrategy));
 }
 
 RenderThread::~RenderThread()
@@ -59,7 +61,6 @@ void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,
 		case TD_TOL_LAM:
 			{
 				std::shared_ptr<ThickLamRowDrawStrategy> pThickLamStartegy(_pDrawStrategyContainer->drawStrategy<ThickLamRowDrawStrategy>(ThickLamRowDrawStrategyId));
-			
 				Q_ASSERT(pThickLamStartegy.get());
 				pThickLamStartegy->SetInitialSettings(pDeviceSettings,num_chan);
 				pThickLamStartegy->Plot(p,vec,_chan_plotter_rect_arr[num_chan],_plot_step_x);
@@ -77,7 +78,13 @@ void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,
 			}
 			break;
 		case TD_B_SCAN:
-			PlotBScanRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
+			{
+				//PlotBScanRow(p,vec,_chan_plotter_rect_arr[num_chan],num_chan);
+				std::shared_ptr<BScanRowDrawStrategy> pBScanStrategy(_pDrawStrategyContainer->drawStrategy<BScanRowDrawStrategy>(BScanRowDrawStrategyId));
+				Q_ASSERT(pBScanStrategy.get());
+				pBScanStrategy->SetInitialSettings(pDeviceSettings,num_chan);
+				pBScanStrategy->Plot(p,vec,_chan_plotter_rect_arr[num_chan],_plot_step_x);
+			}
 			break;
 
 		}
@@ -171,6 +178,7 @@ void RenderThread::PlotBackground(QPainter& painter,const QRect& rect,const Devi
 	for(int i=0;i<num_chans;i++)
 	{
 		painter.drawRect(_chan_label_rect_arr[i]);
+	
 		painter.drawRect(_chan_plotter_rect_arr[i]);
 
 	}
@@ -217,6 +225,14 @@ void RenderThread::DrawLabelChannel(QPainter&painter,const quint8 num_chan,const
 void RenderThread::PlotBScanRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan)
 {
 
+		painter.save();
+	painter.translate(rect.topLeft());
+	//painter.translate(3,2);
+	const float pixmap_width=rect.width();
+	const float pixmap_height=rect.height();
+	painter.fillRect(0,0,pixmap_width,pixmap_height,Qt::magenta);
+
+	painter.restore();
 }
 
 

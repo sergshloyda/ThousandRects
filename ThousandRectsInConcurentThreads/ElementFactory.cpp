@@ -213,7 +213,7 @@ QObject* FactoryContainer::factory(const QString& name)
 
 	 B_ScanElement* b_sc=new B_ScanElement(this);
 	 b_sc->filled=true;
-
+	 memcpy((void*)b_sc->scan,bs_us_struct.scan,sizeof(bs_us_struct.scan));
 	 return b_sc;
  }
 

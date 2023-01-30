@@ -75,6 +75,9 @@ public:
 	void setStrobLevel(const quint8 num_tact,const quint8 num_ampl,const quint8 num_strob,const quint8 new_level);
 	void setStrobLevel(par_us_t* ampl,const quint8 num_strob,const quint8 new_level);
 
+	void setBScanLen(const quint8 num_chan,const quint8 new_val);
+	void setBScanPorog(const quint8 num_chan,const quint8 new_val);
+
 	void setOscCurrStrob(const quint8 num_strob);
 	void setOscCurrStrobLevel(const quint8 new_level);
 	void setOscCurrStrobSubLevel();
@@ -455,6 +458,14 @@ const par_contr_t& getContrPar()
 par_manual_speed_t* getManualSpeedPtr()
 {
 	return &( _par_device.view_par.mspeed);
+}
+quint8 getBScanLen(const quint8 num_chan) const
+{
+	return _par_device.contr_par.trk_par.cn_list.cn_info[num_chan].a_step_count;
+}
+quint8 getBScanPorog(const quint8 num_chan) const
+{
+	return _par_device.contr_par.trk_par.cn_list.cn_info[num_chan].a_k_color;
 }
 };
 

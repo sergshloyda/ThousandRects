@@ -55,7 +55,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,0">
      <item>
-      <widget class="TWidget" name="widget" native="true"/>
+      <widget class="RenderWidget" name="widget" native="true"/>
      </item>
      <item>
       <widget class="QGroupBox" name="groupBox">
@@ -190,9 +190,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>TWidget</class>
+   <class>RenderWidget</class>
    <extends>QWidget</extends>
-   <header>twidget.h</header>
+   <header>renderwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -35,7 +35,7 @@ public:
     QCheckBox *checkBox_2;
     QSpacerItem *horizontalSpacer;
     QHBoxLayout *horizontalLayout_2;
-    TWidget *widget;
+    RenderWidget *widget;
     QGroupBox *groupBox;
     QVBoxLayout *verticalLayout;
     QCheckBox *chan_1;
@@ -91,7 +91,7 @@ public:
         horizontalLayout_2 = new QHBoxLayout();
         horizontalLayout_2->setSpacing(6);
         horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
-        widget = new TWidget(ThousandRectsInConcurentThreadsClass);
+        widget = new RenderWidget(ThousandRectsInConcurentThreadsClass);
         widget->setObjectName(QStringLiteral("widget"));
 
         horizontalLayout_2->addWidget(widget);

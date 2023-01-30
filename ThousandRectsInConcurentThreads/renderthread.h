@@ -5,6 +5,7 @@
 #include "qimage.h"
 #include "qpainter.h"
 #include "qcolor.h"
+#include "qevent.h"
 #include <vector>
 #include"qdebug.h"
 #include "DataProcessor.h"
@@ -26,21 +27,24 @@ class RenderThread : public QObject
 	};
 
 public:
-	RenderThread(QObject *parent);
+	RenderThread(QObject *parent,DeviceSettings* pDevSett,ResultData* pDataProc);
 	~RenderThread();
 	Q_SIGNAL void hasNewRender(const QImage &);
+	Q_SIGNAL void chan_selected(const quint8 num_chan);
 	// Must be thread-safe, we can't access the widget directly!
-	void paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex) ;
+	
 	void calc_visible_elements(const QRect& rect);
 	int get_visible_count();
 	void pointInRect(const QPointF& pos,int* num_chan,const DeviceSettings* pDeviceSettings);
 	void setPlotStep(float plot_step);
+	void replot(const QRect& rect);
+	void mousePressEvent( QMouseEvent * event );
 private:
 	void MarkOutBackground(const DeviceSettings* pDeviceSettings);
 	void PlotBackground(QPainter& painter,const QRect& rect,const DeviceSettings* pDeviceSettings);
 	void DrawLabelChannel(QPainter&painter,const quint8 num_chan,const DeviceSettings* pDeviceSettings);
 	void PlotBScanRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan);
-	
+	void paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex) ;
 private:
 
 	int _visible_elements;
@@ -58,6 +62,10 @@ private:
 	const int _label_txt_margin;
 
 	DrawStrategyContainer* _pDrawStrategyContainer;
+
+
+	ResultData* _pResultDataProcessor;
+	DeviceSettings* _pDeviceSettings;
 
 
 };

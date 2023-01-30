@@ -3,7 +3,7 @@
 #include "devicedata.h"
 #include "ThickElement.h"
 #include "qmutex.h"
-
+#include "renderthread.h"
 //volatile bool DrawReadyCondition::img_ready=true;
 //QMutex DrawReadyCondition::gMutex;
 ThousandRectsInConcurentThreads::ThousandRectsInConcurentThreads(QWidget *parent)
@@ -21,8 +21,12 @@ ThousandRectsInConcurentThreads::ThousandRectsInConcurentThreads(QWidget *parent
 	redraw_timer=new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(received_data()));
 	connect(redraw_timer,SIGNAL(timeout()),this,SLOT(redraw()));
-	ui.widget->setDataProcessor(&_result_data);
-	ui.widget->setDeviceSettings(_pDeviceSettings);
+	RenderThread* render=new RenderThread(this,_pDeviceSettings,&_result_data);
+	/*render->_pDeviceSettings=_pDeviceSettings;
+	render->_pResultDataProcessor=&_result_data;*/
+	ui.widget->setRenderPlotter(render);
+	//ui.widget->setDataProcessor(&_result_data);
+	//ui.widget->setDeviceSettings(_pDeviceSettings);
 
 	setGeometry(100,100,800,800);
 	_factoryContainer=new FactoryContainer(this);
@@ -157,13 +161,13 @@ void ThousandRectsInConcurentThreads::received_data()
 
 		elem_info->sum_defect=sum_def_info_factory->create(elem_info->chan_info_array,_pDeviceSettings);
 		elem_info->filled=true;
-		{
+		
 
 
-		//	QMutexLocker locker(&DrawReadyCondition::gMutex);
+	
 			_result_data.add_element(elem_info);
 
-		}
+		
 
 
 	}
@@ -214,5 +218,10 @@ void ThousandRectsInConcurentThreads::chan_cb_clicked()
 		else
 			pUss->on_us=0;
 	}
+	redraw();
+}
+void ThousandRectsInConcurentThreads::selected_channel(const quint8 sel_chan)
+{
+	_pDeviceSettings->setCurrentNumChan(sel_chan);
 	redraw();
 }

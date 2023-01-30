@@ -7,11 +7,12 @@
 #include "thicklamrowdrawstrategy.h"
 #include "defectrowdrawstrategy.h"
 #include "bscanrowdrawstrategy.h"
+#include <QtConcurrent>
 #include <memory>
 
 
-RenderThread::RenderThread(QObject *parent)
-	: QObject(parent),_label_txt_margin(9)
+RenderThread::RenderThread(QObject *parent,DeviceSettings* pDevSett,ResultData* pDataProc)
+	: QObject(parent),_label_txt_margin(9),_pDeviceSettings(pDevSett),_pResultDataProcessor(pDataProc)
 {
 	_pDrawStrategyContainer=new DrawStrategyContainer(parent);
 	_pDrawStrategyContainer->registerDrawStrategy(CoordDrawStategyId,CLASSMETA(CoordDrawStrategy));
@@ -225,9 +226,8 @@ void RenderThread::DrawLabelChannel(QPainter&painter,const quint8 num_chan,const
 void RenderThread::PlotBScanRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan)
 {
 
-		painter.save();
+	painter.save();
 	painter.translate(rect.topLeft());
-	//painter.translate(3,2);
 	const float pixmap_width=rect.width();
 	const float pixmap_height=rect.height();
 	painter.fillRect(0,0,pixmap_width,pixmap_height,Qt::magenta);
@@ -274,4 +274,32 @@ void RenderThread::setPlotStep(float plot_step)
 {
 	_plot_step_x=plot_step;
 }
+void RenderThread::replot(const QRect& rect)
+{
+	std::vector<ElementInfo*> vec;
+	calc_visible_elements(rect);
+	int request_size=get_visible_count();
+	_pResultDataProcessor->set_requested_size(request_size);
+	vec=_pResultDataProcessor->collect_last_values();
+	
 
+	QtConcurrent::run(this,&RenderThread::paint,vec,rect,_pDeviceSettings,_pResultDataProcessor->get_mutex_ptr());
+}
+void RenderThread::mousePressEvent( QMouseEvent * event )
+{
+	int num_chan=-1;
+	switch (event->button()) {
+	case Qt::LeftButton:
+		{
+			pointInRect(event->pos(),&num_chan,_pDeviceSettings);
+
+			break;
+		}
+	}
+
+	if(num_chan>=0)
+	{
+		
+		emit chan_selected(num_chan);
+	}
+}

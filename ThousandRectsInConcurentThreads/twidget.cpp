@@ -6,73 +6,58 @@
 #include "qevent.h"
 #include "thousandrectsinconcurentthreads.h"
 
-TWidget::TWidget(QWidget *parent)
+RenderWidget::RenderWidget(QWidget *parent)
 	: QWidget(parent)
 {
-	render=new RenderThread(this);
-	connect(render,&RenderThread::hasNewRender,this,&TWidget::hasNewRender);
+
+	
 	setMinimumSize(700, 700);
 }
 
-TWidget::~TWidget()
+RenderWidget::~RenderWidget()
 {
 
 }
-void TWidget::paintEvent(QPaintEvent *event)
+void RenderWidget::paintEvent(QPaintEvent *event)
 {
 	QPainter p(this);
 	p.drawImage(0, 0, _image);
 
 }
 
-void TWidget::setImage(const QImage& image)
+void RenderWidget::setImage(const QImage& image)
 {
 	_image=image;
 	update();
 
 }
-void TWidget::hasNewRender(const QImage& image)
+void RenderWidget::hasNewRender(const QImage& image)
 {
 	setImage(image);
 }
-void TWidget::Plot()
+void RenderWidget::Plot()
 {
 
-	std::vector<ElementInfo*> vec;
-	QRect r=rect();
-	render->setPlotStep(3.0);
-	render->calc_visible_elements(r);
-	int request_size=render->get_visible_count();
-	_pResultDataProcessor->set_requested_size(request_size);
-	vec=_pResultDataProcessor->collect_last_values();
-	
-
-	QtConcurrent::run(render,&RenderThread::paint,vec,r,_pDeviceSettings,_pResultDataProcessor->get_mutex_ptr());
+	_render->setPlotStep(3.0);
+	_render->replot(rect());
 
 }
 
-void TWidget::resizeEvent(QResizeEvent * event)
+void RenderWidget::resizeEvent(QResizeEvent * event)
 {
 	if(event->oldSize().width()!=width())
 		Plot();
 	QWidget::resizeEvent(event);
 }
 
-void TWidget::mousePressEvent(QMouseEvent *event)
+void RenderWidget::mousePressEvent(QMouseEvent *event)
 {
-	int num_chan=-1;
-	switch (event->button()) {
-	case Qt::LeftButton:
-		{
-			render->pointInRect(event->pos(),&num_chan,_pDeviceSettings);
 
-			break;
-		}
-	}
-
-	if(num_chan>=0)
-	{
-		_pDeviceSettings->setCurrentNumChan(num_chan);
-		Plot();
-	}
+	_render->mousePressEvent(event);
+}
+void RenderWidget::setRenderPlotter(RenderThread* renderPlotter)
+{
+	_render=renderPlotter;
+	connect(_render,&RenderThread::hasNewRender,this,&RenderWidget::hasNewRender);
+	connect(_render,&RenderThread::chan_selected,(ThousandRectsInConcurentThreads*)parent(),&ThousandRectsInConcurentThreads::selected_channel);
 }

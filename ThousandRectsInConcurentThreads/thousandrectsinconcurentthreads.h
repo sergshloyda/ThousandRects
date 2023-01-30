@@ -23,11 +23,13 @@ class ThousandRectsInConcurentThreads : public QWidget
 public:
 	ThousandRectsInConcurentThreads(QWidget *parent = 0);
 	~ThousandRectsInConcurentThreads();
+	Q_SLOT void selected_channel(const quint8 );
 protected slots:
 		void on_pushButton_clicked();
 		void received_data();
 		void redraw();
 		void chan_cb_clicked();
+		
 private:
 	void load_settings();
 private:

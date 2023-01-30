@@ -5,13 +5,13 @@
 #include "renderthread.h"
 #include "DataProcessor.h"
 #include "devicesettings.h"
-class TWidget : public QWidget
+class RenderWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
-	TWidget(QWidget *parent);
-	~TWidget();
+	RenderWidget(QWidget *parent);
+	~RenderWidget();
 	void setImage(const QImage& image);
 	Q_SLOT void hasNewRender(const QImage &);
 	void Plot();
@@ -23,14 +23,14 @@ public:
 	{
 		_pDeviceSettings=pDevSet;
 	}
-
+	void setRenderPlotter(RenderThread* renderPlotter);
 protected:
 	 void paintEvent(QPaintEvent *event) ;
 	 void resizeEvent(QResizeEvent * event);
 	 void mousePressEvent ( QMouseEvent * event );
 private:
 	QImage _image;
-	RenderThread* render;
+	RenderThread* _render;
 	ResultData* _pResultDataProcessor;
 	DeviceSettings* _pDeviceSettings;
 	

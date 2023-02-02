@@ -27,7 +27,21 @@ ThousandRectsInConcurentThreads::ThousandRectsInConcurentThreads(QWidget *parent
 	ui.widget->setRenderPlotter(render);
 	//ui.widget->setDataProcessor(&_result_data);
 	//ui.widget->setDeviceSettings(_pDeviceSettings);
-
+	//ui.groupBox->setStyleSheet("QGroupBox {    margin-top: 4ex; }"
+	//						" QGroupBox::title {"
+	//						"subcontrol-origin: margin;"
+	//						"left: 30px; "/* position at the top center */
+	//						" padding: 0px 5px 0px 5px;"
+	//						"background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FFOECE, stop: 1 #FFFFFF);}");
+	//ui.device_indicator->move(10,0);
+	
+	QPixmap pixmap(25,25);
+	pixmap.fill(Qt::white);
+	QPainter painter;
+	painter.begin(&pixmap);
+	painter.drawRect(pixmap.rect().adjusted(0,0,-1,-1));
+	ui.groupBox->setPixmap(pixmap);
+	painter.end();
 	setGeometry(100,100,800,800);
 	_factoryContainer=new FactoryContainer(this);
 	_factoryContainer->registerFactory("DefectElementFactory",CLASSMETA(DefectElementFactory));

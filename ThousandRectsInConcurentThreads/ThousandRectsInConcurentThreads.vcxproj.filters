@@ -203,6 +203,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_bscanrowdrawstrategy.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="devicegroupbox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_devicegroupbox.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_devicegroupbox.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="thousandrectsinconcurentthreads.h">
@@ -260,6 +269,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="bscanrowdrawstrategy.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="devicegroupbox.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

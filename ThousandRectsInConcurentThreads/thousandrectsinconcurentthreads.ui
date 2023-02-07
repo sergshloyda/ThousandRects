@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1106</width>
-    <height>622</height>
+    <height>773</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -58,7 +58,7 @@
       <widget class="RenderWidget" name="widget" native="true"/>
      </item>
      <item>
-      <widget class="DeviceGroupBox" name="groupBox">
+      <widget class="QWidget" name="settings_widget" native="true">
        <property name="minimumSize">
         <size>
          <width>200</width>
@@ -71,210 +71,286 @@
          <pointsize>12</pointsize>
         </font>
        </property>
-       <property name="title">
-        <string>Дефектоскоп</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,0">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QWidget" name="menu" native="true">
-            <property name="minimumSize">
-             <size>
-              <width>120</width>
-              <height>25</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>25</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_1">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_2">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_3">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_4">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_5">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_6">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_7">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_8">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_9">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_10">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_11">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_12">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_13">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="chan_14">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QVBoxLayout" name="verticalLayout"/>
         </item>
         <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+         <widget class="QFrame" name="check_box_frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>133</height>
-           </size>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
           </property>
-         </spacer>
+          <widget class="QCheckBox" name="chan_12">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>306</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_4">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>98</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_9">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>228</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_3">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>72</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_1">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>20</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_11">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>280</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_13">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>332</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_6">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>150</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_5">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>124</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_14">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>358</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_8">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>202</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_7">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>176</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_10">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>254</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="chan_2">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>46</y>
+             <width>83</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>CheckBox</string>
+           </property>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -289,12 +365,6 @@
    <class>RenderWidget</class>
    <extends>QWidget</extends>
    <header>twidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>DeviceGroupBox</class>
-   <extends>QGroupBox</extends>
-   <header>devicegroupbox.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

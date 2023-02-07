@@ -69,18 +69,7 @@ void CustomStyle::drawComplexControl(QStyle::ComplexControl cc, const QStyleOpti
 			proxy()->drawItemPixmap(p, QRect(decorationOffset, 0, pixmapRectWidth, pixmapHeight),
 									Qt::AlignCenter, groupBox->pixmap);
 		}
-		/*else
-		{
-		
-			p->save();
-			QPen pen(Qt::black);
-			pen.setWidth(1);
-			p->setPen(pen);
-			p->drawRect(decorationOffset+textRect.width()+8,0,25,25);
-			p->fillRect(decorationOffset+textRect.width()+8+1, 1, 24, 24, Qt::white);
-			p->restore();
-
-		}*/
+	
 
 		// Draw title
 		if ((groupBox->subControls & QStyle::SC_GroupBoxLabel) && !groupBox->text.isEmpty()) {

@@ -57,7 +57,7 @@ signals:
 	void signal_connect_setted();
 
 
-	void signal_draw_osc();
+	void signal_draw_osc(const QByteArray&);
 	void signal_draw_spectr();
 
 	void signal_collect_amps(const QByteArray&);

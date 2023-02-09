@@ -17,10 +17,13 @@
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QSplitter>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include "qcustomplot.h"
 #include "twidget.h"
 
 QT_BEGIN_NAMESPACE
@@ -28,14 +31,20 @@ QT_BEGIN_NAMESPACE
 class Ui_ThousandRectsInConcurentThreadsClass
 {
 public:
+    QHBoxLayout *horizontalLayout_2;
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout;
     QPushButton *pushButton;
     QCheckBox *checkBox;
     QCheckBox *checkBox_2;
     QSpacerItem *horizontalSpacer;
-    QHBoxLayout *horizontalLayout_2;
+    QSplitter *vert_splitter;
     RenderWidget *widget;
+    QSplitter *horiz_splitter;
+    QWidget *widget_2;
+    QHBoxLayout *horizontalLayout_3;
+    QLabel *label;
+    QCustomPlot *osc_widget;
     QWidget *settings_widget;
     QVBoxLayout *verticalLayout_3;
     QVBoxLayout *verticalLayout;
@@ -59,10 +68,13 @@ public:
     {
         if (ThousandRectsInConcurentThreadsClass->objectName().isEmpty())
             ThousandRectsInConcurentThreadsClass->setObjectName(QStringLiteral("ThousandRectsInConcurentThreadsClass"));
-        ThousandRectsInConcurentThreadsClass->resize(1106, 773);
-        verticalLayout_2 = new QVBoxLayout(ThousandRectsInConcurentThreadsClass);
+        ThousandRectsInConcurentThreadsClass->resize(1332, 819);
+        horizontalLayout_2 = new QHBoxLayout(ThousandRectsInConcurentThreadsClass);
+        horizontalLayout_2->setSpacing(6);
+        horizontalLayout_2->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
+        verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setSpacing(6);
-        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
         verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(6);
@@ -89,17 +101,56 @@ public:
 
         verticalLayout_2->addLayout(horizontalLayout);
 
-        horizontalLayout_2 = new QHBoxLayout();
-        horizontalLayout_2->setSpacing(6);
-        horizontalLayout_2->setObjectName(QStringLiteral("horizontalLayout_2"));
-        widget = new RenderWidget(ThousandRectsInConcurentThreadsClass);
+        vert_splitter = new QSplitter(ThousandRectsInConcurentThreadsClass);
+        vert_splitter->setObjectName(QStringLiteral("vert_splitter"));
+        vert_splitter->setOrientation(Qt::Horizontal);
+        widget = new RenderWidget(vert_splitter);
         widget->setObjectName(QStringLiteral("widget"));
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(widget->sizePolicy().hasHeightForWidth());
+        widget->setSizePolicy(sizePolicy);
+        vert_splitter->addWidget(widget);
+        horiz_splitter = new QSplitter(vert_splitter);
+        horiz_splitter->setObjectName(QStringLiteral("horiz_splitter"));
+        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(horiz_splitter->sizePolicy().hasHeightForWidth());
+        horiz_splitter->setSizePolicy(sizePolicy1);
+        horiz_splitter->setOrientation(Qt::Vertical);
+        widget_2 = new QWidget(horiz_splitter);
+        widget_2->setObjectName(QStringLiteral("widget_2"));
+        widget_2->setMinimumSize(QSize(200, 100));
+        horizontalLayout_3 = new QHBoxLayout(widget_2);
+        horizontalLayout_3->setSpacing(6);
+        horizontalLayout_3->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        label = new QLabel(widget_2);
+        label->setObjectName(QStringLiteral("label"));
+        label->setMinimumSize(QSize(0, 100));
+        label->setStyleSheet(QLatin1String("background-color: white\n"
+""));
 
-        horizontalLayout_2->addWidget(widget);
+        horizontalLayout_3->addWidget(label);
+
+        horiz_splitter->addWidget(widget_2);
+        osc_widget = new QCustomPlot(horiz_splitter);
+        osc_widget->setObjectName(QStringLiteral("osc_widget"));
+        osc_widget->setMinimumSize(QSize(0, 100));
+        horiz_splitter->addWidget(osc_widget);
+        vert_splitter->addWidget(horiz_splitter);
+
+        verticalLayout_2->addWidget(vert_splitter);
+
+        verticalLayout_2->setStretch(1, 1);
+
+        horizontalLayout_2->addLayout(verticalLayout_2);
 
         settings_widget = new QWidget(ThousandRectsInConcurentThreadsClass);
         settings_widget->setObjectName(QStringLiteral("settings_widget"));
-        settings_widget->setMinimumSize(QSize(200, 400));
+        settings_widget->setMinimumSize(QSize(220, 400));
         QFont font;
         font.setFamily(QStringLiteral("Arial"));
         font.setPointSize(12);
@@ -186,10 +237,6 @@ public:
 
         horizontalLayout_2->setStretch(0, 1);
 
-        verticalLayout_2->addLayout(horizontalLayout_2);
-
-        verticalLayout_2->setStretch(1, 1);
-
         retranslateUi(ThousandRectsInConcurentThreadsClass);
 
         QMetaObject::connectSlotsByName(ThousandRectsInConcurentThreadsClass);
@@ -201,6 +248,7 @@ public:
         pushButton->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "PushButton", 0));
         checkBox->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "CheckBox", 0));
         checkBox_2->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "CheckBox", 0));
+        label->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "TextLabel", 0));
         chan_12->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "CheckBox", 0));
         chan_4->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "CheckBox", 0));
         chan_9->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "CheckBox", 0));

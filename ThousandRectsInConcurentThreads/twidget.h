@@ -23,7 +23,7 @@ public:
 	{
 		_pDeviceSettings=pDevSet;
 	}
-	void setRenderPlotter(RenderThread* renderPlotter);
+	void setRenderPlotter(RenderThread* renderPlotter,QWidget* parent);
 protected:
 	 void paintEvent(QPaintEvent *event) ;
 	 void resizeEvent(QResizeEvent * event);

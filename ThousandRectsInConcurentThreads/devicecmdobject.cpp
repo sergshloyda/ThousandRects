@@ -117,7 +117,7 @@ DeviceCmdObject::DeviceCmdObject(DeviceSettings* dev_settings,QObject *parent)
 	connect(p_tune_thr, SIGNAL(signal_wrong_mode()), this->parent(), SLOT(WrongDeviceMode()), Qt::QueuedConnection);
 	connect(p_tune_thr, SIGNAL(signal_connect_setted()), this->parent(), SLOT(EndInitConnection()), Qt::QueuedConnection);
 
-	connect(p_tune_thr, SIGNAL(signal_draw_osc()),	this->parent(), SLOT(draw_osc()), Qt::QueuedConnection);
+	connect(p_tune_thr, SIGNAL(signal_draw_osc(const QByteArray&)),	this->parent(), SLOT(draw_osc(const QByteArray&)), Qt::QueuedConnection);
 	//connect(p_tune_thr, SIGNAL(signal_draw_spectr()),	this->parent(), SLOT(draw_spectr()), Qt::QueuedConnection);
 
 	connect(p_tune_thr, SIGNAL(signal_collect_amps(const QByteArray&)), this->parent(), SLOT(collect_amps(const QByteArray&)), Qt::QueuedConnection);	// ???send data in parent thread

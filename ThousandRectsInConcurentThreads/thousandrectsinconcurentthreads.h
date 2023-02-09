@@ -32,7 +32,7 @@ public:
 	
 	bool get_ed_enabled(){return true;}
 
-	Q_SLOT void selected_channel(const quint8 );
+	//Q_SLOT void selected_channel(const quint8 );
 	Q_SLOT void select_channel(const quint8 numChan);
 
 	Q_SLOT void on_pushButton_clicked();
@@ -48,7 +48,7 @@ public:
 	Q_SLOT void slot_succesfull();
 	Q_SLOT void WrongDeviceMode();
 	Q_SLOT void EndInitConnection();
-	Q_SLOT void draw_osc();
+	Q_SLOT void draw_osc(const QByteArray&);
 	Q_SLOT void collect_amps(const QByteArray&);
 
 	Q_SIGNAL void setConnState(ConnStatusIndicator::ConnectionState,const QString &);

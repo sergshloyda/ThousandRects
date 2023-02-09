@@ -55,9 +55,12 @@ void RenderWidget::mousePressEvent(QMouseEvent *event)
 
 	_render->mousePressEvent(event);
 }
-void RenderWidget::setRenderPlotter(RenderThread* renderPlotter)
+void RenderWidget::setRenderPlotter(RenderThread* renderPlotter,QWidget* parent)
 {
 	_render=renderPlotter;
+	ThousandRectsInConcurentThreads* main_widget=qobject_cast<	ThousandRectsInConcurentThreads*>(parent);
+	Q_ASSERT(main_widget);
 	connect(_render,&RenderThread::hasNewRender,this,&RenderWidget::hasNewRender);
-	connect(_render,&RenderThread::chan_selected,(ThousandRectsInConcurentThreads*)parent(),&ThousandRectsInConcurentThreads::selected_channel);
+	
+	connect(_render,&RenderThread::chan_selected,main_widget,&ThousandRectsInConcurentThreads::select_channel);
 }

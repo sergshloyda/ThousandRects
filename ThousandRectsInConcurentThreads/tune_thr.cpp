@@ -230,8 +230,17 @@ void c_tune_thr::req_timer_timeout()
 
 		if(get_result)
 		{
-			memcpy(p_osc_struct, data_buff, sizeof(osc_struct_t));// так как p_osc_struct указывает на c_obj_cmd osc_struct пишем фактически туда
-			emit signal_draw_osc();// здесь мы в слоте draw_osc() эти данные используем
+			QByteArray osc_array(reinterpret_cast<const char *>(data_buff), sizeof(osc_struct_t));
+//			emit signal_collect_amps(ampl_array);		
+//			
+//			QByteArray buf;
+//buf.resize(sizeof(osc_struct_t));
+//QDataStream stream( &buf, QIODevice::WriteOnly );
+//
+//stream.writeRawData(  reinterpret_cast<const char*>(data_buff), sizeof(osc_struct_t) );
+//			
+//			memcpy(p_osc_struct, data_buff, sizeof(osc_struct_t));// так как p_osc_struct указывает на c_obj_cmd osc_struct пишем фактически туда
+			emit signal_draw_osc(osc_array);// здесь мы в слоте draw_osc() эти данные используем
 		}
 
 		if(!on_tune_thr)

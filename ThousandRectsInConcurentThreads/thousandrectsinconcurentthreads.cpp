@@ -6,6 +6,7 @@
 #include "renderthread.h"
 #include "qsettings.h"
 #include "qmessagebox.h"
+#include <vector>
 //volatile bool DrawReadyCondition::img_ready=true;
 //QMutex DrawReadyCondition::gMutex;
 
@@ -26,18 +27,9 @@ ThousandRectsInConcurentThreads::ThousandRectsInConcurentThreads(QWidget *parent
 
 	
 	RenderThread* render=new RenderThread(this,_pDeviceSettings,&_result_data);
-	/*render->_pDeviceSettings=_pDeviceSettings;
-	render->_pResultDataProcessor=&_result_data;*/
-	ui.widget->setRenderPlotter(render);
-	//ui.widget->setDataProcessor(&_result_data);
-	//ui.widget->setDeviceSettings(_pDeviceSettings);
-	//ui.groupBox->setStyleSheet("QGroupBox {    margin-top: 4ex; }"
-	//						" QGroupBox::title {"
-	//						"subcontrol-origin: margin;"
-	//						"left: 30px; "/* position at the top center */
-	//						" padding: 0px 5px 0px 5px;"
-	//						"background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #FFOECE, stop: 1 #FFFFFF);}");
-	//ui.device_indicator->move(10,0);
+
+	ui.widget->setRenderPlotter(render,this);
+
 	
 	
 	main_row_timer.setInterval(ROWS_REDRAW_INTERVAL);
@@ -48,7 +40,14 @@ ThousandRectsInConcurentThreads::ThousandRectsInConcurentThreads(QWidget *parent
 	ui.verticalLayout->addWidget(_param_edit_tool_box);
 	_param_edit_tool_box->init_ed_params();
 	ui.check_box_frame->setVisible(false);
-	setGeometry(100,100,1000,800);
+
+	//ui.vert_splitter->setStretchFactor(0,1);
+	//ui.vert_splitter->setStretchFactor(1,6);
+
+	//ui.horiz_splitter->setStretchFactor(0,1);
+	//ui.horiz_splitter->setStretchFactor(1,6);
+	//setGeometry(100,100,1000,800);
+	//showMaximized();
 	_factoryContainer=new FactoryContainer(this);
 	_factoryContainer->registerFactory("DefectElementFactory",CLASSMETA(DefectElementFactory));
 	_factoryContainer->registerFactory("ThickElementFactory",CLASSMETA(ThickElementFactory));
@@ -248,11 +247,11 @@ void ThousandRectsInConcurentThreads::chan_cb_clicked()
 	}
 	redraw();
 }
-void ThousandRectsInConcurentThreads::selected_channel(const quint8 sel_chan)
-{
-	_pDeviceSettings->setCurrentNumChan(sel_chan);
-	redraw();
-}
+//void ThousandRectsInConcurentThreads::selected_channel(const quint8 sel_chan)
+//{
+//	_pDeviceSettings->setCurrentNumChan(sel_chan);
+//	redraw();
+//}
 bool ThousandRectsInConcurentThreads::load_params(bool startup, bool load_strings)
 {
 	/*if(!startup && get_ed_enabled())
@@ -636,8 +635,57 @@ void ThousandRectsInConcurentThreads::EndInitConnection()
 	main_row_timer.start();
 }
 
-void ThousandRectsInConcurentThreads::draw_osc()
+void ThousandRectsInConcurentThreads::draw_osc(const QByteArray& buff)
 {
+	QCustomPlot* pCustomPlot=ui.osc_widget;
+	static bool f_time=true;
+	std::vector<quint8> data(buff.data(),buff.data()+buff.size());
+	QVector<double> x;
+	QVector<double> y;
+	
+	for (int i=0; i<data.size(); i++)
+	{
+		//x[i] = i;
+		x.append(i);
+		//y.push_back(data.at(i));
+		y.append( 5*data.at(i)*(qExp(-data.at(i)/50.0)*qCos(data.at(i)/10.0)));
+		//y[i] = qExp(-i/150.0)*qCos(i/10.0); // exponentially decaying cosine
+	
+	}
+#if 1	
+	if(f_time)
+	{
+
+	pCustomPlot->addGraph();
+	pCustomPlot->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
+	pCustomPlot->graph(0)->setName("Air");
+	pCustomPlot->graph(0)->setAntialiased(false);
+	pCustomPlot->xAxis2->setVisible(true);
+	pCustomPlot->xAxis2->setTickLabels(false);
+	pCustomPlot->yAxis2->setVisible(true);
+	pCustomPlot->yAxis2->setTickLabels(false);
+	f_time=false;
+	}
+#endif
+#if 0
+	QCPBars *ampl = new QCPBars(pCustomPlot->xAxis, pCustomPlot->yAxis);
+	ampl->setAntialiased(false);
+	ampl->setPen(QPen(QColor(0, 168, 140).lighter(130)));
+	ampl->setBrush(QColor(0, 168, 140));
+#endif
+	
+#if 1
+		pCustomPlot->graph(0)->setData(x, y);
+	//
+	pCustomPlot->graph(0)->rescaleAxes();
+#endif
+#if 0
+	ampl->setData(x,y);
+#endif
+	pCustomPlot->replot();
+	// make left and bottom axes always transfer their ranges to right and top axes:
+	//connect(_pCustomPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), _pCustomPlot->xAxis2, SLOT(setRange(QCPRange)));
+
 }
 	 void ThousandRectsInConcurentThreads::collect_amps(const QByteArray& byte_array)
 {

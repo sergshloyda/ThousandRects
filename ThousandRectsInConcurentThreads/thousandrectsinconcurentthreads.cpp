@@ -41,13 +41,13 @@ ThousandRectsInConcurentThreads::ThousandRectsInConcurentThreads(QWidget *parent
 	_param_edit_tool_box->init_ed_params();
 	ui.check_box_frame->setVisible(false);
 
-	//ui.vert_splitter->setStretchFactor(0,1);
-	//ui.vert_splitter->setStretchFactor(1,6);
+	ui.vert_splitter->setStretchFactor(0,1);
+	ui.vert_splitter->setStretchFactor(1,6);
 
-	//ui.horiz_splitter->setStretchFactor(0,1);
-	//ui.horiz_splitter->setStretchFactor(1,6);
+	ui.horiz_splitter->setStretchFactor(0,1);
+	ui.horiz_splitter->setStretchFactor(1,6);
 	//setGeometry(100,100,1000,800);
-	//showMaximized();
+	showMaximized();
 	_factoryContainer=new FactoryContainer(this);
 	_factoryContainer->registerFactory("DefectElementFactory",CLASSMETA(DefectElementFactory));
 	_factoryContainer->registerFactory("ThickElementFactory",CLASSMETA(ThickElementFactory));

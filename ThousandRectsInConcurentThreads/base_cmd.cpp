@@ -3,7 +3,7 @@
 extern int checkfcs16(char *cp, const int len );
 
 
-c_base_cmd::c_base_cmd(QObject *parent)
+BaseConn::BaseConn(QObject *parent)
 	: QObject(parent),
 
 
@@ -21,32 +21,32 @@ c_base_cmd::c_base_cmd(QObject *parent)
 {
 }
 
-c_base_cmd::~c_base_cmd()
+BaseConn::~BaseConn()
 {
 }
 
-bool c_base_cmd::IsAttached() const
+bool BaseConn::IsAttached() const
 {
 	return attached;
 }
 
-void c_base_cmd::SetAttached(const bool is_attached)
+void BaseConn::SetAttached(const bool is_attached)
 {
 	attached = is_attached;
 }
 
-int c_base_cmd::GetRequestPeriod() const
+int BaseConn::GetRequestPeriod() const
 {
 	return request_period;
 }
 
-void c_base_cmd::slot_write()
+void BaseConn::slot_write()
 {
 	if(attached)
 		process_writing();
 }
 
-void c_base_cmd::obr_resv(char *in_buff, quint16 len)
+void BaseConn::obr_resv(char *in_buff, quint16 len)
 {
 	if((len < 3) || !attached || !reseive_wait)
 		return;
@@ -55,8 +55,8 @@ void c_base_cmd::obr_resv(char *in_buff, quint16 len)
 		return;
 
 	memcpy(&resv_dat, in_buff, len);
-	if(resv_dat.type==200)
-		qDebug()<<"URRRA";
+	/*if(resv_dat.type==200)
+		qDebug()<<"URRRA";*/
 
 	if((send_dat.type == CMD_REQ_DAT) && (resv_dat.type != CMD_SUBM_REQ))
 		return;
@@ -76,13 +76,13 @@ void c_base_cmd::obr_resv(char *in_buff, quint16 len)
 	}
 }
 
-void c_base_cmd::slot_start()
+void BaseConn::slot_start()
 {
 	StartConnection();
 	StartMutex.unlock();
 }
 
-void c_base_cmd::slot_stop()
+void BaseConn::slot_stop()
 {
 	StopConnection();
 	StopMutex.unlock();

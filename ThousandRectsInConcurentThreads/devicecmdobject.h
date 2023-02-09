@@ -24,14 +24,14 @@ protected:
 	c_tcp_cmd *p_tcp_cmd;
 #else
 	QThread *p_thr_udp;
-	c_udp_cmd *p_udp_cmd;
+	UdpConn *p_udp_cmd;
 #endif
 
 	QThread *p_thr_tune;
 
 public:
 
-	c_tune_thr *p_tune_thr;
+	SendRsvObj *p_tune_thr;
 	QString ip_addr;
 	int port;
 	bool setup_mode;

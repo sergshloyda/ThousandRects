@@ -35,7 +35,7 @@ c_base_dev_cmd::~c_base_dev_cmd()
 }
 
 
-void c_base_dev_cmd::AttachToCMD(c_base_cmd *base_cmd)
+void c_base_dev_cmd::AttachToCMD(BaseConn *base_cmd)
 {
 	if(attached)
 		return;
@@ -70,7 +70,7 @@ void c_base_dev_cmd::AttachToCMD(c_base_cmd *base_cmd)
 	else
 	{
 		unsuccesfull_conn = max_unsuccesfull_conn;
-		emit NoConnection();
+			emit curr_cmd->NoConnection();//пересоединяемся
 	}
 }
 
@@ -109,9 +109,23 @@ void c_base_dev_cmd::DetachFromCMD()
 	curr_cmd = nullptr;
 }
 
-void c_base_dev_cmd::gen_send_dat(const quint8 type, const quint8 cmd, const quint8 *in_dat, quint16 len)	// в type - CMD_PUT_DAT, CMD_REQ_DAT, CMD_PUT_CMD
+void c_base_dev_cmd::prepare_send_dat(const quint8 type, const quint8 cmd, const quint8 *in_dat, quint16 len)	// в type - CMD_PUT_DAT, CMD_REQ_DAT, CMD_PUT_CMD
 {
-	p_send_dat->type = type;
+	curr_cmd->send_dat.type=type;
+	curr_cmd->send_dat.cmd=cmd;
+	curr_cmd->send_dat.len=len;
+
+		if(type == CMD_REQ_DAT)
+		len = 2*sizeof(quint8) + sizeof(quint16);
+	else
+	{
+		if(len > 0)
+			memcpy(curr_cmd->send_dat.buff, in_dat, len);
+		len += 2*sizeof(quint8) + sizeof(quint16);
+	}
+	addfcs16(reinterpret_cast<char*>(&curr_cmd->send_dat), len);
+
+	/*p_send_dat->type = type;
 	p_send_dat->cmd = cmd;
 	p_send_dat->len = len;								// в CMD_REQ_DAT вместо длины - offset, а длина всегда 0
 	if(type == CMD_REQ_DAT)
@@ -122,7 +136,7 @@ void c_base_dev_cmd::gen_send_dat(const quint8 type, const quint8 cmd, const qui
 			memcpy(p_send_dat->buff, in_dat, len);
 		len += 2*sizeof(quint8) + sizeof(quint16);
 	}
-	addfcs16(p_char_send_dat, len);	
+	addfcs16(p_char_send_dat, len);	*/
 }
 
 bool c_base_dev_cmd::send_and_wait(const quint8 type, const quint8 cmd, const quint8 *in_dat, const quint16 in_len, quint8 *out_dat, quint16 *out_len)
@@ -139,7 +153,7 @@ bool c_base_dev_cmd::send_and_wait(const quint8 type, const quint8 cmd, const qu
 	}
 
 
-	gen_send_dat(type, cmd, in_dat, in_len);	// сгенерировать пакет данных: заполнить поля p_sent_dat(curr_cmd->sent_dat)
+	prepare_send_dat(type, cmd, in_dat, in_len);	// сгенерировать пакет данных: заполнить поля p_sent_dat(curr_cmd->sent_dat)
 
 	curr_cmd->reseive_wait = true;
 	emit signal_write();
@@ -157,14 +171,21 @@ bool c_base_dev_cmd::send_and_wait(const quint8 type, const quint8 cmd, const qu
 		{
 			if(out_dat != nullptr)
 			{
+#if 0
 /*				if(type == CMD_PUT_CMD)
 					memcpy(out_dat, &p_resv_dat->len, sizeof(quint16));
 				else*/
 					memcpy(out_dat, p_resv_dat->buff, p_resv_dat->len);
-			}
 
+#endif
+					memcpy(out_dat,curr_cmd->resv_dat.buff,curr_cmd->resv_dat.len);
+			}
+#if 0
 			if(out_len != nullptr)
 				*out_len = p_resv_dat->len;
+#endif
+			if(out_len != nullptr)
+				*out_len = curr_cmd->resv_dat.len;
 		}
 		unsuccesfull_conn = 0;
 
@@ -177,7 +198,7 @@ bool c_base_dev_cmd::send_and_wait(const quint8 type, const quint8 cmd, const qu
 	SendMutex.unlock();
 
 	if(unsuccesfull_conn > max_unsuccesfull_conn)//больше 5 раз
-		emit NoConnection();//пересоединяемся
+		emit curr_cmd->NoConnection();//пересоединяемся
 
 
 	time_count = el_timer.elapsed();

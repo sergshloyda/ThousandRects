@@ -1,7 +1,7 @@
 #include "udp_cmd.h"
 
-c_udp_cmd::c_udp_cmd(QObject *parent) : 
-		c_base_cmd(parent),
+UdpConn::UdpConn(QObject *parent) : 
+		BaseConn(parent),
 		p_socket(nullptr),
 		host_addr(),
 		q_host_addr(),
@@ -11,11 +11,11 @@ c_udp_cmd::c_udp_cmd(QObject *parent) :
 	request_period = 20;
 }
 
-c_udp_cmd::~c_udp_cmd()
+UdpConn::~UdpConn()
 {
 }
 
-void c_udp_cmd::set_host(QString addr, int iport)
+void UdpConn::set_host(QString addr, int iport)
 {
 	host_addr = addr;
 	q_host_addr.setAddress(host_addr);
@@ -23,13 +23,13 @@ void c_udp_cmd::set_host(QString addr, int iport)
 }
 
 
-bool c_udp_cmd::IsConnected() const
+bool UdpConn::IsConnected() const
 {
 	return (p_socket != nullptr);
 }
 
 
-void c_udp_cmd::StartConnection()
+void UdpConn::StartConnection()
 {
 	p_socket = new QUdpSocket(this);
 	connect(p_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
@@ -37,7 +37,7 @@ void c_udp_cmd::StartConnection()
 	bool result=p_socket->bind(port);
 }
 
-void c_udp_cmd::StopConnection()
+void UdpConn::StopConnection()
 {
 	p_socket->close();
 
@@ -48,12 +48,12 @@ void c_udp_cmd::StopConnection()
 	p_socket = nullptr;
 }
 
-void c_udp_cmd::process_writing()
+void UdpConn::process_writing()
 {
 	p_socket->writeDatagram(reinterpret_cast<char *>(&send_dat), send_dat.GetFullLength(), q_host_addr, port+1/*2001*/);
 }
 
-void c_udp_cmd::udp_ready_dat()
+void UdpConn::udp_ready_dat()
 {
 	QHostAddress curr_host_addr;
 
@@ -70,7 +70,7 @@ void c_udp_cmd::udp_ready_dat()
 	}
 }
 
-void c_udp_cmd::socketError(QAbstractSocket::SocketError err)
+void UdpConn::socketError(QAbstractSocket::SocketError err)
 {
 	qDebug()<<"SocketError "<< QString("Error: %1").arg(err);
 }

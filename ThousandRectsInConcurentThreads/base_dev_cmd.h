@@ -9,11 +9,11 @@ class c_base_dev_cmd : public QObject
 {
 Q_OBJECT
 
-protected:
+public:
 
 	volatile bool attached;
 
-	c_base_cmd *curr_cmd;
+	BaseConn *curr_cmd;
 
 
 	sent_dat_t *p_send_dat;
@@ -32,7 +32,7 @@ protected:
 	QElapsedTimer el_timer;
 
 
-	inline void gen_send_dat(	const quint8 type, 
+	inline void prepare_send_dat(	const quint8 type, 
 								const quint8 cmd, 
 								const quint8 *in_dat, 
 								quint16 in_len);	// генерирование отправляемых данных
@@ -52,7 +52,7 @@ public:
 	virtual ~c_base_dev_cmd();
 
 
-	void AttachToCMD(c_base_cmd *base_cmd);
+	void AttachToCMD(BaseConn *base_cmd);
 	void DetachFromCMD();
 
 	void ResetConnCount();

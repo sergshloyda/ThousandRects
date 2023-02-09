@@ -2,7 +2,7 @@
 
 
 
-c_tune_thr::c_tune_thr(	QObject *parent,
+SendRsvObj::SendRsvObj(	QObject *parent,
 
 /*				quint8 *contr_status,
 				quint8 *queue_len,
@@ -64,7 +64,7 @@ c_tune_thr::c_tune_thr(	QObject *parent,
 
 
 
-void c_tune_thr::on_off_timer(bool on_off)
+void SendRsvObj::on_off_timer(bool on_off)
 {
 	if(on_off)
 		req_timer.start(dev_cmd.GetRequestPeriod());
@@ -73,12 +73,12 @@ void c_tune_thr::on_off_timer(bool on_off)
 }
 
 
-c_tune_thr::~c_tune_thr()
+SendRsvObj::~SendRsvObj()
 {
 }
 
 
-bool c_tune_thr::send_param()
+bool SendRsvObj::send_param()
 {
 	param_buffer.set<quint16>(0);     // длина
 	param_buffer.add(m_changed_param);
@@ -205,7 +205,7 @@ bool c_tune_thr::send_param()
 
 
 
-void c_tune_thr::req_timer_timeout()
+void SendRsvObj::req_timer_timeout()
 {
 	if(!on_tune_thr)
 		return;
@@ -330,7 +330,7 @@ void c_tune_thr::req_timer_timeout()
 }
 
 
-bool c_tune_thr::apply_params()
+bool SendRsvObj::apply_params()
 {
 	quint8 curr_mode = 0;
 	bool result = dev_cmd.dev_get_cur_rej(&curr_mode);

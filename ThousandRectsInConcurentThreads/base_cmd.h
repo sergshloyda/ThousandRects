@@ -7,7 +7,7 @@
 #include "qdebug.h"
 
 
-class c_base_cmd : public QObject
+class BaseConn : public QObject
 {
 Q_OBJECT
 
@@ -30,14 +30,15 @@ public:
 
 
 
-	c_base_cmd(QObject *parent);
-	virtual ~c_base_cmd();
+	BaseConn(QObject *parent);
+	virtual ~BaseConn();
 
 	bool IsAttached() const;
 	void SetAttached(const bool is_attached);
 
 	int GetRequestPeriod() const;
 	virtual bool IsConnected() const = 0;
+	//void NoConnection();
 
 protected:
 
@@ -47,12 +48,13 @@ protected:
 	virtual void process_writing() = 0;			// запись данных из send_dat в систему обмена
 	void obr_resv(char *in_buff, quint16 len);	// обработка данных, полученных из системы обмена
 
-public slots:
+public :
 
-	void slot_write();
+	Q_SLOT void slot_write();
+	Q_SLOT void slot_start();
+	Q_SLOT void slot_stop();
 
-	void slot_start();
-	void slot_stop();
+	Q_SIGNAL void NoConnection();
 	
 };
 

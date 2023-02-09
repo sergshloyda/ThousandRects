@@ -6,7 +6,7 @@
 #include <QTimer>
 
 
-class c_tcp_cmd : public c_base_cmd
+class c_tcp_cmd : public BaseConn
 {
 Q_OBJECT
 

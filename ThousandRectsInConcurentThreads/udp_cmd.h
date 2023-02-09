@@ -5,7 +5,7 @@
 #include <QtNetwork/QUdpSocket>
 
 
-class c_udp_cmd : public c_base_cmd
+class UdpConn : public BaseConn
 {
 Q_OBJECT
 
@@ -21,8 +21,8 @@ protected:
 
 
 public:
-	c_udp_cmd(QObject *parent);
-	virtual ~c_udp_cmd();
+	UdpConn(QObject *parent);
+	virtual ~UdpConn();
 
 	void set_host(QString addr, int iport);
 

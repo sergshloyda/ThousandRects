@@ -3,7 +3,7 @@
 
 
 c_tcp_cmd::c_tcp_cmd(QObject *parent) : 
-		c_base_cmd(parent),
+		BaseConn(parent),
 
 		p_socket(nullptr),
 		host_addr(),

@@ -6,6 +6,7 @@
 #include "dev_interf.h"
 #include "dev_cmd.h"
 #include "hybriddata.h"
+#include "devicecmd.h"
 //#include "RingBuffer.h"
 
 
@@ -14,11 +15,11 @@
 
 
 ///=====================================================
-class c_tune_thr: public QObject
+class SendRsvObj: public QObject
 {
  Q_OBJECT
 public:
-	c_tune_thr(	QObject *parent,
+	SendRsvObj(	QObject *parent,
 				
 /*				quint8 *contr_status,
 				quint8 *queue_len,
@@ -37,13 +38,14 @@ public:
 				
 				indicator_states_t *indic_states);
 
-	~c_tune_thr();
+	~SendRsvObj();
 
 	bool on_tune_thr;
 	quint8 data_buff[MAX_FRAME_LEN];
 
 
-	c_dev_cmd dev_cmd;
+	//c_dev_cmd dev_cmd;
+	DevCmdObr dev_cmd;
 
 	bool is_initing;
 

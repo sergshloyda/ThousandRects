@@ -78,12 +78,12 @@ DeviceCmdObject::DeviceCmdObject(DeviceSettings* dev_settings,QObject *parent)
 	p_tcp_cmd->moveToThread(p_thr_tcp);
 #else
 	p_thr_udp = new QThread();
-	p_udp_cmd = new c_udp_cmd(0);
+	p_udp_cmd = new UdpConn(0);
 	p_udp_cmd->moveToThread(p_thr_udp);
 #endif
 
 
-	p_tune_thr = new c_tune_thr( 0,
+	p_tune_thr = new SendRsvObj( 0,
 		
 					&osc_struct,
 					&spectr_struct,
@@ -110,8 +110,8 @@ DeviceCmdObject::DeviceCmdObject(DeviceSettings* dev_settings,QObject *parent)
 
 
 	connect(this, SIGNAL(on_off_tune_timer(bool)), p_tune_thr, SLOT(on_off_timer(bool)), Qt::QueuedConnection);
-	connect(&p_tune_thr->dev_cmd, SIGNAL(NoConnection()), this->parent(), SLOT(NoConnection()), Qt::QueuedConnection);
-
+	//connect(&p_tune_thr->dev_cmd, SIGNAL(NoConnection()), this->parent(), SLOT(NoConnection()), Qt::QueuedConnection);
+	connect(p_udp_cmd, SIGNAL(NoConnection()), this->parent(), SLOT(NoConnection()), Qt::QueuedConnection);
 	connect(p_tune_thr, SIGNAL(signal_unsuccesfull()), this->parent(), SLOT(slot_unsuccesfull()), Qt::QueuedConnection);
 	connect(p_tune_thr, SIGNAL(signal_succesfull()), this->parent(), SLOT(slot_succesfull()), Qt::QueuedConnection);
 	connect(p_tune_thr, SIGNAL(signal_wrong_mode()), this->parent(), SLOT(WrongDeviceMode()), Qt::QueuedConnection);
@@ -185,7 +185,7 @@ int DeviceCmdObject::getUnsuccessfulConnCount()
 }
 int DeviceCmdObject::getEstimateTime()
 {
-	return p_tune_thr->dev_cmd.time_count;	
+	return p_tune_thr->dev_cmd.getEstTimeCount();	
 }
 bool DeviceCmdObject::devClearBuffer()
 {

@@ -64,6 +64,7 @@ public:
 	bool save_to_file_session_params(const int num_setting,const QString& param_dir_name,const QString& ip_addr);
 	int calculate_zond_freq() const;
 	void get_inputs_from_uss(std::vector<quint8>& inputs);
+	bool find_chan_number(const quint8 num_tact,const quint8 num_uss,quint8* num_chan);
 
 	void setDeviceChangedParams(quint32 params);
 	void setEnableCurrAmplEdit(const bool new_us_edit);
@@ -172,6 +173,24 @@ public:
 	const par_thick_t& getThickParams() const
 	{
 		return _par_device.contr_par.thick_par;
+	}
+	const float getThickNormVal() const
+	{
+		return 0.01f * _par_device.contr_par.thick_par.thick;
+	}
+	const float getThickOverVal(const float norm_val)const
+	{
+		
+		float over_thick;
+		if(_par_device.contr_par.thick_par.thick_lim_relative)
+			over_thick = norm_val * (1.0f + _par_device.contr_par.thick_par.thick_lim_rel_pos * 0.002f);	// в 2 раза больше thick_lim_rel_pos
+		else
+			over_thick = norm_val + _par_device.contr_par.thick_par.thick_lim_pos * 0.02f;	// в 2 раза больше thick_lim_rel_pos
+		return over_thick;
+	}
+	par_thick_t* getThickParamsPtr()
+	{
+		return & _par_device.contr_par.thick_par;
 	}
 	quint8 getSelChanNum() const
 	{
@@ -398,7 +417,7 @@ const quint8 getOscInput()
 {
 	return _par_device.view_par.osc_par.ninp;
 }
-const par_pow_t& getPowGen(const quint8 num_pow_gen)
+const par_pow_t& getPowGen(const quint8 num_pow_gen) const
 {
 	return _par_device.contr_par.trk_par.pow_gen[num_pow_gen];
 }
@@ -406,7 +425,7 @@ const par_pow_t& getPowGen(const quint8 num_pow_gen)
 {
 	return _par_device.contr_par.trk_par.pow_gen+num_pow_gen;
 }
-const par_thick_rez_t& getThickRez()
+const par_thick_rez_t& getThickRez() const
 {
 	return _par_device.contr_par.tol_rez;
 }
@@ -414,7 +433,7 @@ par_thick_rez_t* getThickRezPtr()
 {
 	return &_par_device.contr_par.tol_rez;
 }
-const par_thick_corr_t& getThickCorr()
+const par_thick_corr_t& getThickCorr() const
 {
 	return _par_device.contr_par.tol_corr;
 }
@@ -426,12 +445,16 @@ const par_thick_corr_t& getThickCorr()
 {
 	return _par_device.view_par.curr_nparam;
 }
-const par_object_t& getObjectPar()
+const par_object_t& getObjectPar()const
 {
 	 return _par_device.view_par.object_par;
 }
+par_object_t * getObjectParPtr()
+{
+	return &_par_device.view_par.object_par;
+}
 
-const par_izm_t& getIzmPar()
+const par_izm_t& getIzmPar() const
 {
 	return _par_device.contr_par.trk_par.izm_par;
 }
@@ -459,6 +482,10 @@ par_manual_speed_t* getManualSpeedPtr()
 {
 	return &( _par_device.view_par.mspeed);
 }
+const par_manual_speed_t& getManualSpeed() const
+{
+	return  _par_device.view_par.mspeed;
+}
 quint8 getBScanLen(const quint8 num_chan) const
 {
 	return _par_device.contr_par.trk_par.cn_list.cn_info[num_chan].a_step_count;
@@ -466,6 +493,10 @@ quint8 getBScanLen(const quint8 num_chan) const
 quint8 getBScanPorog(const quint8 num_chan) const
 {
 	return _par_device.contr_par.trk_par.cn_list.cn_info[num_chan].a_k_color;
+}
+const par_probe_t& getChanInfoProbeParam(const quint8 num_chan) const
+{
+	return _par_device.contr_par.trk_par.cn_list.cn_info[num_chan].probe_par;
 }
 };
 

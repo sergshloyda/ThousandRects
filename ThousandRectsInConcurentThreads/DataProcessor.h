@@ -6,28 +6,32 @@
 #include "qmutex.h"
 template<class T> class DataProcessor
 {
-private:
+protected:
 	QMutex _mutex;
-	std::vector<std::shared_ptr<T>> _ptr_list;
+	
 	int _size;
 	int _max_size;
 	int _requested_size;
-private:
+protected:
 	void add_ptr_element(std::shared_ptr<T> elem);
 	std::shared_ptr<T> get_ptr_element(const int pos);
 	void get_element(T* elem,const int pos);
-	int get_size();
 	int get_max_size();
 	std::vector<T*> getLastValues(int request_size);
 public:
+	std::vector<std::shared_ptr<T>> _ptr_list;
+	int get_size();
 	void add_element( T* elem);
 	T* get_element(const int pos);
-	void set_requested_size(int reg_size);
+	void set_requested_size(int req_size);
 	std::vector<T*> collect_last_values();
 	QMutex* get_mutex_ptr();
+	void clear();
+	void reset();
+	void set_max_size(const int new_max_size);
 
 	DataProcessor(int max_size);
-	~DataProcessor(void);
+	virtual ~DataProcessor(void);
 };
 template<class T>  DataProcessor<T>::DataProcessor(int max_size):
 							_size(0),
@@ -151,4 +155,35 @@ template<class T>  QMutex* DataProcessor<T>:: get_mutex_ptr()
 {
 	return &_mutex;
 }
-typedef  DataProcessor<ElementInfo> ResultData;
+template<class T> void DataProcessor<T>::clear()
+{
+	_ptr_list.clear();
+	_size=0;
+	_max_size=0;
+	_requested_size=0;
+}
+template<class T> void DataProcessor<T>::reset()
+{
+	for(auto pos=_ptr_list.begin();pos!=_ptr_list.end();++pos)
+		(*pos).reset();
+	_size=0;
+	_requested_size=0;
+}
+
+template<class T> void DataProcessor<T>::set_max_size(const int new_max_size)
+{
+	if(new_max_size>_max_size)
+	{
+		_ptr_list.resize(new_max_size);
+		_max_size=new_max_size;
+	}
+	else
+	{
+		std::vector<T*> temp_vec=getLastValues(new_max_size);
+		_ptr_list.resize(new_max_size);
+		_max_size=new_max_size;
+		_ptr_list.assign(temp_vec.begin(),temp_vec.end());
+
+	}
+}
+typedef  DataProcessor<ResultElement> ResultData;

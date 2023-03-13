@@ -4,7 +4,7 @@
 #include "element_info.h"
 template<class T> class ResultData
 {
-	private:
+	public:
 	std::vector<std::shared_ptr<T>> _ptr_list;
 	int _size;
 	int _max_size;
@@ -67,4 +67,4 @@ template<class T> int   ResultData<T>::get_size()
 }
 
 
-typedef  ResultData<ElementInfo> AllResultData;
+typedef  ResultData<ResultElement> AllResultData;

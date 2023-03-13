@@ -14,7 +14,7 @@ ThickRowDrawStrategy::~ThickRowDrawStrategy()
 {
 
 }
-void ThickRowDrawStrategy::Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x)
+void ThickRowDrawStrategy::Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x)
 {
 
 	
@@ -45,7 +45,7 @@ void ThickRowDrawStrategy::Plot(QPainter& painter,const std::vector<ElementInfo*
 	painter.restore();
 }
 void ThickRowDrawStrategy::PlotThickStrAmpl(QPainter & painter, 
-	const std::vector<ElementInfo*>& vec, QPen &pen1, QPen &pen2, 
+	const std::vector<ResultElement*>& vec, QPen &pen1, QPen &pen2, 
 	const QColor &plot_col,const float plot_step_x,const float plot_step_y,const float base_y,const float pixmap_width )
 	{
 		const par_strb_t *strb_par = _pDeviceSettings->getAmplStrobArray(_num_chan);
@@ -183,7 +183,7 @@ void ThickRowDrawStrategy::PlotThickStrAmpl(QPainter & painter,
 		poligon.clear();
 	}
 
-void ThickRowDrawStrategy::PlotThick(QPainter & painter, const std::vector<ElementInfo*>& vec, QPen &pen1, QPen &pen2,const float pixmap_height,const float pixmap_width,const float plot_step_x)
+void ThickRowDrawStrategy::PlotThick(QPainter & painter, const std::vector<ResultElement*>& vec, QPen &pen1, QPen &pen2,const float pixmap_height,const float pixmap_width,const float plot_step_x)
 	{
 		const par_thick_t& thick_params=_pDeviceSettings->getThickParams();
 		float norm_val = thick_params.thick*0.01f;
@@ -1272,7 +1272,7 @@ void ThickRowDrawStrategy::PlotThick(QPainter & painter, const std::vector<Eleme
 	}
 
 
-void ThickRowDrawStrategy::PlotThickErrorSemiTransparent (QPainter& painter,const std::vector<ElementInfo*>& vec,const float pixmap_height,const float plot_step_x)
+void ThickRowDrawStrategy::PlotThickErrorSemiTransparent (QPainter& painter,const std::vector<ResultElement*>& vec,const float pixmap_height,const float plot_step_x)
 {
 		float curr_x = left_tab;
 		float base_y = pixmap_height;
@@ -1293,7 +1293,7 @@ void ThickRowDrawStrategy::PlotThickErrorSemiTransparent (QPainter& painter,cons
 		}
 }
 
-//PlotThick(QPainter & painter, const std::vector<ElementInfo*>& vec, QPen &pen1, QPen &pen2)
+//PlotThick(QPainter & painter, const std::vector<ResultElement*>& vec, QPen &pen1, QPen &pen2)
 
 //void ThickRowDrawStrategy::SetInitialSettings(const DeviceSettings* pDeviceSettings,const quint8 num_chan)
 //{

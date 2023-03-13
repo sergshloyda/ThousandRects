@@ -15,7 +15,7 @@ ThickLamRowDrawStrategy::~ThickLamRowDrawStrategy()
 
 }
 
-void ThickLamRowDrawStrategy::Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x)
+void ThickLamRowDrawStrategy::Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x)
 {
 
 	
@@ -50,7 +50,7 @@ void ThickLamRowDrawStrategy::Plot(QPainter& painter,const std::vector<ElementIn
 		painter.restore();
 }
 void ThickLamRowDrawStrategy::PlotLaminThickStrAmpl(QPainter & painter, 
-	const std::vector<ElementInfo*>& vec, 
+	const std::vector<ResultElement*>& vec, 
 	const par_strb_t *strb_par,
 	QPen &pen1, QPen &pen2,const QColor &plot_col,
 	const float plot_step_x,const float plot_step_y,const float base_y,const float pixmap_width )
@@ -192,7 +192,7 @@ void ThickLamRowDrawStrategy::PlotLaminThickStrAmpl(QPainter & painter,
 
 
 
-void  ThickLamRowDrawStrategy::PlotLamThick(QPainter & painter, const std::vector<ElementInfo*>& vec, 
+void  ThickLamRowDrawStrategy::PlotLamThick(QPainter & painter, const std::vector<ResultElement*>& vec, 
 	QPen &pen1, QPen &pen2,const float pixmap_height,const float pixmap_width,const float plot_step_x)
 	{
 		const par_thick_t& thick_params=_pDeviceSettings->getThickParams();

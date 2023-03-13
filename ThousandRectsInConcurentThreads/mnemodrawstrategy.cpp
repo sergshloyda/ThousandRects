@@ -29,7 +29,7 @@ MnemoDrawStrategy::~MnemoDrawStrategy()
 //	_error_flag_no_ak_color=_pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_NO_AK"));
 //	_error_flag_lamination_color=_pDeviceSettings->getIncorrectColor(QString("ERROR_FLAG_LAMINATION"));
 //}
-void MnemoDrawStrategy::Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x)
+void MnemoDrawStrategy::Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x)
 {
 const int w=rect.width();
 	const int h=rect.height();
@@ -124,7 +124,7 @@ const int w=rect.width();
 	коричневый-толщина превышает допустимую;красный-толщина ниже допустимой*/
 #if 1//PlotMnemoThickElement lambda
 	auto PlotMnemoThickElement=[=](QPainter& painter,
-		const ElementInfo* elem_info,
+		const ResultElement* elem_info,
 		const float curr_x,
 		const float next_x,
 		const int curr_y_b,
@@ -175,8 +175,8 @@ const int w=rect.width();
 	/*PlotMnemoThickLine lambda отвечает за отрисовку линии толщины, за уровень принимается минимальная толщина*/
 #if 1
 	auto _PlotMnemoThickLine=[=](QPainter& painter,
-		const ElementInfo* elem_info_prev,
-		const ElementInfo* elem_info_curr,
+		const ResultElement* elem_info_prev,
+		const ResultElement* elem_info_curr,
 		const float curr_x,
 		const float next_x,
 		const int curr_y_b,
@@ -235,7 +235,7 @@ const int w=rect.width();
 	/*_PlotMnemoElem lambda заполняет уровни суммой дефектов верх-середина-низ;продольный & поперечный - разный цвет и разный "вес" в зависимости от flaw_size*/
 #if 1
 	auto PlotSingleMnemoElem=[=]( QPainter& painter,
-		const ElementInfo* elem_info,
+		const ResultElement* elem_info,
 		const int layer,
 		const float curr_x,
 		const float next_x,
@@ -265,7 +265,7 @@ const int w=rect.width();
 
 
 	auto _PlotMnemoElem=[=]( QPainter& painter,
-		const ElementInfo* elem_info,
+		const ResultElement* elem_info,
 		const float curr_x,
 		const float next_x,
 		const std::vector<int>& row_b,

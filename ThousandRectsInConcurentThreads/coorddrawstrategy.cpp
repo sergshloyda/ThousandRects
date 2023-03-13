@@ -10,7 +10,7 @@ CoordDrawStrategy::~CoordDrawStrategy()
 {
 
 }
-void CoordDrawStrategy::Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x)
+void CoordDrawStrategy::Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x)
 {
 	const int txtWidth = 30;
 #if 1
@@ -24,7 +24,7 @@ void CoordDrawStrategy::Plot(QPainter& painter,const std::vector<ElementInfo*>& 
 #endif
 	painter.save();
 	painter.translate(rect.topLeft());
-	painter.translate(3,2);
+
 	const float pixmap_width=rect.width();
 	const float pixmap_height=rect.height();
 

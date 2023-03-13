@@ -11,6 +11,8 @@
 #define	MIN_AMPL		1
 #define	MAX_AMPL		255
 
+#define ERROR_FLAG_S_OK         0x0
+
 #define ERROR_FLAG_INCORRECT	0x1
 #define ERROR_FLAG_DATA_SKIP	0x2
 
@@ -717,6 +719,8 @@ struct defect_dimentions_t		// 0 - отсутствие дефекта, иначе - (условный размер 
 #define	DEF_POR_STRB	50
 #define	DEF_POR2_STRB	127
 #define	DEF_POR3_STRB	254
+
+#define DEF_NUM_MISS_COORD 3
 
 #define NUM_INPUTS_BLOCK	8
 

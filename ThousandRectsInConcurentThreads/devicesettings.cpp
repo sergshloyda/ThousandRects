@@ -51,7 +51,7 @@ const quint16 DeviceSettings::chan_rej[NUM_CHANS] =	{
 												TD_DEF_PROD,
 												TD_TOL,
 												TD_TOL_LAM,
-												TD_B_SCAN,
+												TD_DEF_PROD,
 												TD_DEF_PROD,
 												TD_DEF_PROD,
 												TD_DEF_POPER,
@@ -1156,4 +1156,24 @@ void DeviceSettings::setBScanLen(const quint8 num_chan,const quint8 new_val)
 void DeviceSettings::setBScanPorog(const quint8 num_chan,const quint8 new_val)
 {
 	_par_device.contr_par.trk_par.cn_list.cn_info[num_chan].a_k_color=new_val;
+}
+bool DeviceSettings::find_chan_number(const quint8 num_tact,const quint8 num_uss,quint8* num_chan)
+{
+	quint8 i = 0;
+	const cn_list_t &cn_list = _par_device.contr_par.trk_par.cn_list;
+
+	bool result = false;
+
+	while(!result && (i < cn_list.chan_count))
+	{
+		const cn_info_t &cn_info = cn_list.cn_info[i];
+		if((cn_info.ntact == num_tact) && (cn_info.nus == num_uss))
+		{
+			result = true;
+			*num_chan = i;
+		}
+		i++;
+	}
+
+	return result;
 }

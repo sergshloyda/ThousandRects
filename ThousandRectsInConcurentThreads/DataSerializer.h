@@ -15,8 +15,8 @@ public:
 	bool writeFile( QIODevice* ioDevice, const par_device_t& device_params);
 	bool readFile( QIODevice* ioDevice, par_device_t& device_params );
   
-	bool writeFile( QIODevice* ioDevice, const QList<ElementInfo*>& elem_info_list );
-    bool readFile( QIODevice* ioDevice, QList<ElementInfo*>& elem_info_list );
+	bool writeFile( QIODevice* ioDevice, const QList<ResultElement*>& elem_info_list );
+    bool readFile( QIODevice* ioDevice, QList<ResultElement*>& elem_info_list );
 
     const QString& errorString( void ) const { return m_errorString; }
 

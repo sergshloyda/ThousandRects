@@ -12,7 +12,7 @@ class CoordDrawStrategy : public BaseDrawStrategy
 public:
 	Q_INVOKABLE CoordDrawStrategy();
 	~CoordDrawStrategy();
-	void Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x);
+	void Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x);
 private:
 	
 };

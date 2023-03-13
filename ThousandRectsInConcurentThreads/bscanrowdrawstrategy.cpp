@@ -10,7 +10,7 @@ BScanRowDrawStrategy::~BScanRowDrawStrategy()
 {
 
 }
- void BScanRowDrawStrategy::Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x) 
+ void BScanRowDrawStrategy::Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x) 
  {
 	 if(rect.height()==0)return;
 	painter.save();

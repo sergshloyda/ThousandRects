@@ -31,7 +31,7 @@ protected:
 
 public:
 
-	SendRsvObj *p_tune_thr;
+	SendRsvObj *p_send_recv_obj;
 	QString ip_addr;
 	int port;
 	bool setup_mode;
@@ -41,8 +41,6 @@ public:
 	DeviceSettings* _p_device_settings;
 	quint32 g_req_send_dat;
 	indicator_states_t indic_states;
-	osc_struct_t osc_struct;
-	spectr_struct_t spectr_struct;
 	device_data_t curr_dev_data;
 
 	void SetupDevice();
@@ -57,7 +55,14 @@ public:
 	int getUnsuccessfulConnCount();
 	int getEstimateTime();
 	bool devClearBuffer();
-
+	SendRsvObj * getSendReceiveObjPtr()
+	{
+		return p_send_recv_obj;
+	}
+	 DevCmdObr* getDevCmdObrPtr()
+	{
+		return &p_send_recv_obj->dev_cmd;
+	}
 signals:
 
 	void on_off_tune_timer(bool);

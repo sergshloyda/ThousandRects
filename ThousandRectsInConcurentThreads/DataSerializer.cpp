@@ -93,7 +93,7 @@ bool DataSerializer::readFile( QIODevice* ioDevice, par_device_t& device_params 
     return true;
 }
 
-  bool DataSerializer::writeFile( QIODevice* ioDevice, const QList<ElementInfo*>& elem_info_list )
+  bool DataSerializer::writeFile( QIODevice* ioDevice, const QList<ResultElement*>& elem_info_list )
   {
 
 
@@ -106,7 +106,7 @@ bool DataSerializer::readFile( QIODevice* ioDevice, par_device_t& device_params 
 		dataStream<<elem_info_list.count();
 		for(auto pos=elem_info_list.begin();pos!=elem_info_list.end();++pos)
 		{
-			ElementInfo* elem_info=*pos;
+			ResultElement* elem_info=*pos;
         dataStream << *elem_info;
 		}
 
@@ -122,7 +122,7 @@ bool DataSerializer::readFile( QIODevice* ioDevice, par_device_t& device_params 
 
     return true;
   }
-    bool DataSerializer::readFile( QIODevice* ioDevice, QList<ElementInfo*>& elem_info_list )
+    bool DataSerializer::readFile( QIODevice* ioDevice, QList<ResultElement*>& elem_info_list )
 	{
 
     elem_info_list.clear();
@@ -141,7 +141,7 @@ bool DataSerializer::readFile( QIODevice* ioDevice, par_device_t& device_params 
 		Q_ASSERT(count_elems>0);
 		while(count_elems--)
 		{
-			ElementInfo* elem_info=new ElementInfo();
+			ResultElement* elem_info=new ResultElement();
         dataStream >> *elem_info;
 		elem_info_list.append(elem_info);
 		}

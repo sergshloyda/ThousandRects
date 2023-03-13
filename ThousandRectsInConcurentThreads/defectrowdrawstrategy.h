@@ -11,7 +11,7 @@ class DefectRowDrawStrategy : public BaseDrawStrategy
 public:
 	Q_INVOKABLE DefectRowDrawStrategy();
 	~DefectRowDrawStrategy();
-	virtual void Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x) override;
+	virtual void Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x) override;
 private:
 	void  setStrobColors(QColor sub_strob_color[][NUM_STRBS_EXTRA+1],const par_strb_info_t *strb_chan_info);
 	void PlotDefectElement(QPainter& painter,const DefectElement* def_elem,QColor SubStrobsColor[][NUM_STRBS_EXTRA+1],

@@ -15,18 +15,25 @@
 #include "ThickElement.h"
 #include <vector>
 #include "connstatusindicator.h"
-#define ROWS_REDRAW_INTERVAL 25
+#include "qshortcut.h"
+#include "dial_ampl_time.h"
+#include "controlsettings.h"
+#include <memory>
+#include "ResultDataProcessor.h"
 
-class DrawReadyCondition{
-public:
-	static volatile bool img_ready;
-	static QMutex gMutex;
-};
+
+
+
 class ThousandRectsInConcurentThreads : public QWidget
 {
 	Q_OBJECT
 
 public:
+		enum MainWindowMode
+	{
+		SetupMode=0,
+		ViewMode=1
+	};
 	ThousandRectsInConcurentThreads(QWidget *parent = 0);
 	~ThousandRectsInConcurentThreads();
 	
@@ -50,36 +57,48 @@ public:
 	Q_SLOT void EndInitConnection();
 	Q_SLOT void draw_osc(const QByteArray&);
 	Q_SLOT void collect_amps(const QByteArray&);
+	Q_SLOT void show_ampl_time();
+	Q_SLOT void control_param_changed();
+	Q_SLOT void reset_buffers();
+	
 
 	Q_SIGNAL void setConnState(ConnStatusIndicator::ConnectionState,const QString &);
+	Q_SIGNAL void emit_thick_data(const QByteArray&,const float);
 		
 private:
 	void load_check_boxes();
 	void loadSettings();
 	bool load_params(bool startup, bool load_strings = true);
 	void setup_connections();
+	void addShortcuts();
+
 	ConnStatusIndicator::ConnectionState SetConnStatus();
+	void ProcessAmpRespond(const QByteArray& device_data);
 private:
 	QString ParamDirName;
 	QString LibraryDirName;
 	QString ResultDirName;
 
 	Ui::ThousandRectsInConcurentThreadsClass ui;
-
+	MainWindowMode _main_window_mode;
 	DeviceSettings* _pDeviceSettings;
 	DeviceCmdObject* _dev_cmd;
 	QTimer *timer;
 	QTimer* redraw_timer;
 	QTimer main_row_timer;
-	ResultData _result_data;
-	FactoryContainer* _factoryContainer;
+	ResultDataProcessor _result_data;
+	//FactoryContainer* _factoryContainer;
+	ResultElementFactory* _res_elem_factory;
 	DeviceData dev_data;
 	QMutex _mutex;
 	std::vector<QCheckBox*> _chan_cb_list;
 
 	ParamEditToolBox* _param_edit_tool_box;
+	DialAmplTime *dial_ampl_time;
 	bool NoConnect;
 	int _curr_unsuccesfull_conn;
+	QShortcut* keyCtrlF2;
+	std::shared_ptr<ControlSettings> _pControlSettings;
 };
 
 #endif // THOUSANDRECTSINCONCURENTTHREADS_H

@@ -16,7 +16,7 @@ DeviceCmdObject::~DeviceCmdObject()
 	p_udp_cmd->deleteLater();
 #endif
 
-	p_tune_thr->deleteLater();
+	p_send_recv_obj->deleteLater();
 	p_thr_tune->exit();
 
 #if TCP_MODE_ON
@@ -47,7 +47,7 @@ DeviceCmdObject::DeviceCmdObject(DeviceSettings* dev_settings,QObject *parent)
 		p_udp_cmd(nullptr),
 #endif
 		p_thr_tune(nullptr),
-		p_tune_thr(nullptr),
+		p_send_recv_obj(nullptr),
 
 
 		ip_addr(),
@@ -65,8 +65,7 @@ DeviceCmdObject::DeviceCmdObject(DeviceSettings* dev_settings,QObject *parent)
 
 		indic_states(),
 
-		osc_struct(),
-		spectr_struct(),
+	
 		curr_dev_data()
 {
 
@@ -83,11 +82,8 @@ DeviceCmdObject::DeviceCmdObject(DeviceSettings* dev_settings,QObject *parent)
 #endif
 
 
-	p_tune_thr = new SendRsvObj( 0,
+	p_send_recv_obj = new SendRsvObj( 0,
 		
-					&osc_struct,
-					&spectr_struct,
-
 					&g_req_send_dat,
 					&curr_dev_data,
 
@@ -98,7 +94,7 @@ DeviceCmdObject::DeviceCmdObject(DeviceSettings* dev_settings,QObject *parent)
 					&indic_states);
 
 	p_thr_tune = new QThread();
-	p_tune_thr->moveToThread(p_thr_tune);
+	p_send_recv_obj->moveToThread(p_thr_tune);
 
 #if TCP_MODE_ON
 	p_thr_tcp->start(QThread::HighestPriority);
@@ -109,33 +105,30 @@ DeviceCmdObject::DeviceCmdObject(DeviceSettings* dev_settings,QObject *parent)
 	p_thr_tune->start(QThread::LowPriority);
 
 
-	connect(this, SIGNAL(on_off_tune_timer(bool)), p_tune_thr, SLOT(on_off_timer(bool)), Qt::QueuedConnection);
-	//connect(&p_tune_thr->dev_cmd, SIGNAL(NoConnection()), this->parent(), SLOT(NoConnection()), Qt::QueuedConnection);
+	connect(this, SIGNAL(on_off_tune_timer(bool)), p_send_recv_obj, SLOT(on_off_timer(bool)), Qt::QueuedConnection);
 	connect(p_udp_cmd, SIGNAL(NoConnection()), this->parent(), SLOT(NoConnection()), Qt::QueuedConnection);
-	connect(p_tune_thr, SIGNAL(signal_unsuccesfull()), this->parent(), SLOT(slot_unsuccesfull()), Qt::QueuedConnection);
-	connect(p_tune_thr, SIGNAL(signal_succesfull()), this->parent(), SLOT(slot_succesfull()), Qt::QueuedConnection);
-	connect(p_tune_thr, SIGNAL(signal_wrong_mode()), this->parent(), SLOT(WrongDeviceMode()), Qt::QueuedConnection);
-	connect(p_tune_thr, SIGNAL(signal_connect_setted()), this->parent(), SLOT(EndInitConnection()), Qt::QueuedConnection);
+	connect(p_send_recv_obj, SIGNAL(signal_unsuccesfull()), this->parent(), SLOT(slot_unsuccesfull()), Qt::QueuedConnection);
+	connect(p_send_recv_obj, SIGNAL(signal_succesfull()), this->parent(), SLOT(slot_succesfull()), Qt::QueuedConnection);
+	connect(p_send_recv_obj, SIGNAL(signal_wrong_mode()), this->parent(), SLOT(WrongDeviceMode()), Qt::QueuedConnection);
+	connect(p_send_recv_obj, SIGNAL(signal_connect_setted()), this->parent(), SLOT(EndInitConnection()), Qt::QueuedConnection);
 
-	connect(p_tune_thr, SIGNAL(signal_draw_osc(const QByteArray&)),	this->parent(), SLOT(draw_osc(const QByteArray&)), Qt::QueuedConnection);
-	//connect(p_tune_thr, SIGNAL(signal_draw_spectr()),	this->parent(), SLOT(draw_spectr()), Qt::QueuedConnection);
+	connect(p_send_recv_obj, SIGNAL(signal_draw_osc(const QByteArray&)),	this->parent(), SLOT(draw_osc(const QByteArray&)), Qt::QueuedConnection);
+	connect(p_send_recv_obj, SIGNAL(signal_collect_amps(const QByteArray&)), this->parent(), SLOT(collect_amps(const QByteArray&)), Qt::QueuedConnection);	// ???send data in parent thread
 
-	connect(p_tune_thr, SIGNAL(signal_collect_amps(const QByteArray&)), this->parent(), SLOT(collect_amps(const QByteArray&)), Qt::QueuedConnection);	// ???send data in parent thread
-//	connect(p_tune_thr, SIGNAL(signal_collect_amps()), parent, SLOT(SetConnStatus()), Qt::QueuedConnection);
 }
 void DeviceCmdObject::SetupDevice()
 {
-	p_tune_thr->dev_cmd.ResetConnCount();
+	p_send_recv_obj->dev_cmd.ResetConnCount();
 	g_changed_param = 0;
 	
-	p_tune_thr->is_initing = true;
+	p_send_recv_obj->is_initing = true;
 
 #if TCP_MODE_ON
 	p_tcp_cmd->set_host(ip_addr,port);
-	p_tune_thr->dev_cmd.AttachToCMD(p_tcp_cmd);
+	p_send_recv_obj->dev_cmd.AttachToCMD(p_tcp_cmd);
 #else
 	p_udp_cmd->set_host(ip_addr,port);
-	p_tune_thr->dev_cmd.AttachToCMD(p_udp_cmd);
+	p_send_recv_obj->dev_cmd.AttachToCMD(p_udp_cmd);
 #endif
 
 	UpdateDevice(true);
@@ -145,16 +138,16 @@ void DeviceCmdObject::SetupDevice()
 void DeviceCmdObject::StopDevice()
 {
 //	timer_ampls.stop();
-/*	if(IsAttached() && !p_tune_thr->is_initing)
-		p_tune_thr->dev_cmd.dev_set_cur_rej(REJ_MENU);		// возврат в меню
+/*	if(IsAttached() && !p_send_recv_obj->is_initing)
+		p_send_recv_obj->dev_cmd.dev_set_cur_rej(REJ_MENU);		// возврат в меню
 */
 
 
 	UpdateDevice(false);
-	p_tune_thr->dev_cmd.DetachFromCMD();
+	p_send_recv_obj->dev_cmd.DetachFromCMD();
 
-	if(p_tune_thr->is_initing)
-		p_tune_thr->is_initing = false;
+	if(p_send_recv_obj->is_initing)
+		p_send_recv_obj->is_initing = false;
 
 //	buf_ampl.clear();
 }
@@ -164,16 +157,16 @@ void DeviceCmdObject::StopDevice()
 
 void DeviceCmdObject::UpdateDevice(const bool update)
 {
-	if(p_tune_thr->on_tune_thr != update)
+	if(p_send_recv_obj->on_tune_thr != update)
 	{
-		p_tune_thr->on_tune_thr = update;		// немедленно отключить работу таймера
+		p_send_recv_obj->on_tune_thr = update;		// немедленно отключить работу таймера
 		emit on_off_tune_timer(update);			// со временем отключить сам таймер
 	}
 }
 
 bool DeviceCmdObject::IsAttached() const
 {
-	return p_tune_thr->dev_cmd.IsAttached();
+	return p_send_recv_obj->dev_cmd.IsAttached();
 }
 void DeviceCmdObject::setIPAddress(const QString& new_ip_addr)
 {
@@ -181,13 +174,13 @@ void DeviceCmdObject::setIPAddress(const QString& new_ip_addr)
 }
 int DeviceCmdObject::getUnsuccessfulConnCount()
 {
-	return p_tune_thr->dev_cmd.GetUnSuccesfullCount();
+	return p_send_recv_obj->dev_cmd.GetUnSuccesfullCount();
 }
 int DeviceCmdObject::getEstimateTime()
 {
-	return p_tune_thr->dev_cmd.getEstTimeCount();	
+	return p_send_recv_obj->dev_cmd.getEstTimeCount();	
 }
 bool DeviceCmdObject::devClearBuffer()
 {
-	return p_tune_thr->dev_cmd.dev_put_clear_buff();
+	return p_send_recv_obj->dev_cmd.dev_put_clear_buff();
 }

@@ -14,7 +14,7 @@ public:
 	BaseDrawStrategy(QObject *parent=0);
 	~BaseDrawStrategy();
 
-	virtual void Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x)=0;
+	virtual void Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x)=0;
 	void SetInitialSettings(const DeviceSettings* pDeviceSettings,quint8 num_chan=-1);
 protected:
 	void PlotErrSemiTransparent(QPainter & painter,	const quint8 &defect_flag,const float curr_x,const float next_x,const int curr_y_b,const int curr_height);

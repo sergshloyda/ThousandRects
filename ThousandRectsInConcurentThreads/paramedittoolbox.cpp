@@ -15,7 +15,9 @@ ParamEditToolBox::ParamEditToolBox(QWidget *parent,DeviceSettings* p_dev_setting
 	us_par_copied(),
 	cn_info_copied(),
 	_widget_selector(25,2,this),
-	_conn_status_ind(IND_WIDTH,IND_HEIGHT,this)
+	_conn_status_ind(IND_WIDTH,IND_HEIGHT,this),
+	_dial_control_par(nullptr)
+
 {
 	ui.setupUi(this);
 	_main_widget=qobject_cast<ThousandRectsInConcurentThreads*>(parent);
@@ -108,13 +110,12 @@ ParamEditToolBox::ParamEditToolBox(QWidget *parent,DeviceSettings* p_dev_setting
 	_strob_str_map.insert(StrobThick,tr("\320\242\320\233"));//ТЛ
 	_strob_str_map.insert(StrobRez,tr("\320\240\320\225\320\227"));//РЕЗ
 
-	/*QPixmap pixmap(IND_WIDTH,IND_HEIGHT);
-	pixmap.fill(ui.groupBox_defectoscop->palette().window().color());
-	QPainter painter;
-	painter.begin(&pixmap);
-	painter.drawRect(pixmap.rect().adjusted(0,0,-1,-1));*/
+
 	ui.groupBox_defectoscop->setPixmap(_conn_status_ind.SetConnState(ConnStatusIndicator::Connection_OFF,QString()));
-	/*painter.end();*/
+	ui.label_manual_speed->setDeviceSettings(p_dev_settings);
+
+	connect(ui.button_object_par,SIGNAL(clicked()),this,SLOT(edit_obj_params()));
+	connect(this,SIGNAL(control_param_changed()),_main_widget,SLOT(control_param_changed()));
 
 }
 
@@ -2560,4 +2561,156 @@ void ParamEditToolBox::setMenuConnectionState(bool state)
 bool ParamEditToolBox::getMenuConnState()
 {
 	return _main_menu->GetMenuConnState();
+}
+void ParamEditToolBox::setQueueLen(const int queue_len)
+{
+	QPalette pal = QPalette();
+	if(queue_len >= 200)
+	{
+		ui.label_queue_len->setText(tr("\320\236\321\207\320\265\321\200\320\265\320\264\321\214 > %1").arg(queue_len, 0, 10));
+		pal.setColor(QPalette::Window, Qt::red);
+	}
+	else
+	{
+		ui.label_queue_len->setText(tr("\320\236\321\207\320\265\321\200\320\265\320\264\321\214 %1").arg(queue_len, 0, 10));
+		pal.setColor(QPalette::Window,ui.label_n_rez->palette().window().color());
+	}
+
+	ui.label_queue_len->setAutoFillBackground(true); 
+	ui.label_queue_len->setPalette(pal);
+}
+
+	/*Q_SLOT*/ void ParamEditToolBox::edit_obj_params()
+{
+if(_dial_control_par != nullptr)
+		return;
+
+	_dial_control_par = new DialControlPar( this);
+
+
+	_dial_control_par->set_dimen_par(_curr_par_device->getThickParams(), _curr_par_device->getObjectPar());
+
+	_dial_control_par->EnableParams(_main_widget->get_ed_enabled());
+
+
+	_dial_control_par->show();
+
+	if ((_dial_control_par->exec() == QDialog::Accepted) && _main_widget->get_ed_enabled())		// работает только в режиме настройки (???)
+	{
+		_dial_control_par->apply_dimen_par(_curr_par_device->getThickParamsPtr(),_curr_par_device->getObjectParPtr());
+		emit control_param_changed();
+
+	}
+
+	delete _dial_control_par;
+
+	_dial_control_par = nullptr;
+
+}
+
+///*Q_SLOT*/	void ParamEditToolBox::collect_amps(const QByteArray& byte_array)
+//{
+//#if 1
+//	auto prepare_send_data=[=](device_send_data_t& send_data,const QByteArray& data)->bool
+//	{
+//		const char* p_res_data=data.data();
+//		memcpy(&send_data.data_header, p_res_data, sizeof(ampl_header_t));//вычленить из данных информацию о сигнале?
+//		p_res_data += sizeof(ampl_header_t);						// p_res_data указывает на массив результатов
+//		if(send_data.data_header.count == 0)		// данные не приняты ????
+//			return false;
+//		quint16 tmp_chan_apl_size = sizeof(data_elem_header_t);
+//		//расчитываем длину принятых данных 
+//		for(quint8 i = 0; i < _curr_par_device->getChansCount(); i++)
+//		{
+//			if(_curr_par_device->getChanAmpl(i).on_us)//усилитель работает?
+//			{
+//				switch(_curr_par_device->getChanMode(i))		// режим в cn_list и режим усилителя должны совпадать...
+//				{
+//				case TD_DEF_PROD:
+//				case TD_DEF_POPER:		
+//				case TD_TOL_LAM:
+//				case TD_TOL:
+//					tmp_chan_apl_size += sizeof(amp_us_struct_t);//смещаем указатель данных на размер amp_us_struct_t
+//					break;
+//
+//				case TD_TOL_REZ:
+//					break;
+//
+//				case TD_B_SCAN:
+//					tmp_chan_apl_size += sizeof(b_scan_us_struct_t);//смещаем указатель данных на размер b_scan_us_struct_t
+//
+//				default:;
+//				}
+//			}
+//		}
+//
+//		if(send_data.data_header.elem_length != tmp_chan_apl_size)		// несовпадение размеров 
+//			return false;
+//
+//		if(data.size() != (sizeof(ampl_header_t) + send_data.data_header.elem_length*send_data.data_header.count))// несовпадение размеров принятых элементов
+//			return false;
+//		for (int i=0;i<send_data.data_header.count;i++)
+//		{
+//			element_data_t elem;
+//			data_elem_header_t elem_header;
+//			int data_offset=send_data.data_header.elem_length*i;
+//			memcpy(&elem_header,p_res_data+data_offset,sizeof(data_elem_header_t));
+//			elem.elem_header.coord=elem_header.coord;
+//			data_offset+=sizeof(data_elem_header_t);
+//			for(quint8  j = 0; j < _curr_par_device->getChansCount(); j++)
+//			{
+//				if(_curr_par_device->getChanAmpl(j).on_us)//усилитель работает?
+//				{
+//					chan_raw_data_t raw_data;
+//					switch(_curr_par_device->getChanMode(j))		// режим в cn_list и режим усилителя должны совпадать...
+//					{
+//					case TD_DEF_PROD:
+//					case TD_DEF_POPER:		
+//					case TD_TOL_LAM:
+//					case TD_TOL:
+//						{
+//
+//							memcpy(raw_data.body_data,p_res_data+data_offset,sizeof(amp_us_struct_t));
+//							amp_us_struct_t amp_tims;
+//							memcpy(&amp_tims,raw_data.body_data,sizeof(amp_us_struct_t));
+//						//	print_amp_tims(amp_tims,j);
+//							raw_data.len=sizeof(amp_us_struct_t);
+//
+//							data_offset += sizeof(amp_us_struct_t);//смещаем указатель данных на размер amp_us_struct_t
+//						}
+//						break;
+//
+//					case TD_TOL_REZ:
+//						break;
+//
+//					case TD_B_SCAN:
+//						{
+//							memcpy(raw_data.body_data,p_res_data+data_offset,sizeof(b_scan_us_struct_t));
+//							raw_data.len=sizeof(b_scan_us_struct_t);
+//							data_offset += sizeof(b_scan_us_struct_t);//смещаем указатель данных на размер b_scan_us_struct_t
+//						}
+//
+//					default:;
+//					}
+//					elem.chan_data_array.push_back(raw_data);
+//				}
+//			}
+//			send_data.elem_array.push_back(elem);
+//
+//		}
+//		return true;
+//	};
+//#endif
+//device_send_data_t send_data;
+//	prepare_send_data(send_data,byte_array);
+//	setQueueLen(send_data.data_header.queue_len);
+//	quint32 coord=send_data.elem_array.at(send_data.data_header.count-1).elem_header.coord;
+//	
+//	
+//
+//}
+void ParamEditToolBox::AppendCoord(const quint32 curr_coord,const quint32 prev_coord,const int num_miss_coord)
+{
+	ui.label_coord->setText(QString::number(curr_coord, 10));
+	ui.label_manual_speed->AppendCoord(curr_coord,prev_coord,num_miss_coord);
 }

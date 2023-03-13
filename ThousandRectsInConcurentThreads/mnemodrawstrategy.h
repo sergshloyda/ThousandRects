@@ -10,7 +10,7 @@ class MnemoDrawStrategy : public BaseDrawStrategy
 public:
 	Q_INVOKABLE MnemoDrawStrategy();
 	~MnemoDrawStrategy();
-	virtual void Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x) override;
+	virtual void Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x) override;
 	//void SetInitialSettings(const DeviceSettings* pDeviceSettings);
 private:
 	/*void PlotErrSemiTransparent(QPainter & painter,	const quint8 &defect_flag,const float curr_x,const float next_x,const int curr_y_b,const int curr_height);

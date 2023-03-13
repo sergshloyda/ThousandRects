@@ -23,6 +23,7 @@
 #include <QtWidgets/QSplitter>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include "beamwidget.h"
 #include "qcustomplot.h"
 #include "twidget.h"
 
@@ -42,7 +43,15 @@ public:
     RenderWidget *widget;
     QSplitter *horiz_splitter;
     QWidget *widget_2;
-    QHBoxLayout *horizontalLayout_3;
+    QVBoxLayout *verticalLayout_4;
+    QHBoxLayout *horizontalLayout_5;
+    QLabel *label_5;
+    QLabel *label_7;
+    BeamWidget *beam_widget;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *Time;
+    QLabel *X;
+    QLabel *Y;
     QLabel *label;
     QCustomPlot *osc_widget;
     QWidget *settings_widget;
@@ -94,7 +103,7 @@ public:
 
         horizontalLayout->addWidget(checkBox_2);
 
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+        horizontalSpacer = new QSpacerItem(500, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout->addItem(horizontalSpacer);
 
@@ -123,18 +132,64 @@ public:
         widget_2 = new QWidget(horiz_splitter);
         widget_2->setObjectName(QStringLiteral("widget_2"));
         widget_2->setMinimumSize(QSize(200, 100));
-        horizontalLayout_3 = new QHBoxLayout(widget_2);
-        horizontalLayout_3->setSpacing(6);
-        horizontalLayout_3->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout_3->setObjectName(QStringLiteral("horizontalLayout_3"));
+        verticalLayout_4 = new QVBoxLayout(widget_2);
+        verticalLayout_4->setSpacing(6);
+        verticalLayout_4->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
+        horizontalLayout_5 = new QHBoxLayout();
+        horizontalLayout_5->setSpacing(6);
+        horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
+        horizontalLayout_5->setContentsMargins(-1, 6, -1, 6);
+        label_5 = new QLabel(widget_2);
+        label_5->setObjectName(QStringLiteral("label_5"));
+
+        horizontalLayout_5->addWidget(label_5);
+
+        label_7 = new QLabel(widget_2);
+        label_7->setObjectName(QStringLiteral("label_7"));
+
+        horizontalLayout_5->addWidget(label_7);
+
+        beam_widget = new BeamWidget(widget_2);
+        beam_widget->setObjectName(QStringLiteral("beam_widget"));
+        horizontalLayout_4 = new QHBoxLayout(beam_widget);
+        horizontalLayout_4->setSpacing(0);
+        horizontalLayout_4->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_4->setObjectName(QStringLiteral("horizontalLayout_4"));
+        horizontalLayout_4->setContentsMargins(0, 0, 0, 0);
+        Time = new QLabel(beam_widget);
+        Time->setObjectName(QStringLiteral("Time"));
+
+        horizontalLayout_4->addWidget(Time);
+
+        X = new QLabel(beam_widget);
+        X->setObjectName(QStringLiteral("X"));
+
+        horizontalLayout_4->addWidget(X);
+
+        Y = new QLabel(beam_widget);
+        Y->setObjectName(QStringLiteral("Y"));
+
+        horizontalLayout_4->addWidget(Y);
+
+
+        horizontalLayout_5->addWidget(beam_widget);
+
+        horizontalLayout_5->setStretch(0, 1);
+        horizontalLayout_5->setStretch(1, 1);
+        horizontalLayout_5->setStretch(2, 3);
+
+        verticalLayout_4->addLayout(horizontalLayout_5);
+
         label = new QLabel(widget_2);
         label->setObjectName(QStringLiteral("label"));
         label->setMinimumSize(QSize(0, 100));
         label->setStyleSheet(QLatin1String("background-color: white\n"
 ""));
 
-        horizontalLayout_3->addWidget(label);
+        verticalLayout_4->addWidget(label);
 
+        verticalLayout_4->setStretch(1, 1);
         horiz_splitter->addWidget(widget_2);
         osc_widget = new QCustomPlot(horiz_splitter);
         osc_widget->setObjectName(QStringLiteral("osc_widget"));
@@ -248,7 +303,12 @@ public:
         pushButton->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "PushButton", 0));
         checkBox->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "CheckBox", 0));
         checkBox_2->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "CheckBox", 0));
-        label->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "TextLabel", 0));
+        label_5->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "Gen", 0));
+        label_7->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "Uss", 0));
+        Time->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "Time", 0));
+        X->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "X", 0));
+        Y->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "Y", 0));
+        label->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "ViewScan", 0));
         chan_12->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "CheckBox", 0));
         chan_4->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "CheckBox", 0));
         chan_9->setText(QApplication::translate("ThousandRectsInConcurentThreadsClass", "CheckBox", 0));

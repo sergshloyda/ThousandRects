@@ -10,7 +10,7 @@ class BScanRowDrawStrategy : public BaseDrawStrategy
 public:
 	Q_INVOKABLE BScanRowDrawStrategy();
 	~BScanRowDrawStrategy();
-	virtual void Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x) override;
+	virtual void Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x) override;
 
 private:
 	void CalculateMaxValues(const quint8 *src_ampl_arr, const float value_count_per_pixel, quint8 *max_ampl_arr, const quint8 max_ampl_count, const quint8 ampl_count, quint8 *pixel_count);

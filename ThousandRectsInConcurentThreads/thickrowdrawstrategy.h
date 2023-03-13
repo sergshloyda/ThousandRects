@@ -10,11 +10,11 @@ class ThickRowDrawStrategy : public BaseDrawStrategy
 public:
 	Q_INVOKABLE ThickRowDrawStrategy();
 	~ThickRowDrawStrategy();
-	virtual void Plot(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const float plot_step_x) override;
+	virtual void Plot(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const float plot_step_x) override;
 
 protected:
 	void PlotThickStrAmpl(QPainter & painter, 
-		const std::vector<ElementInfo*>& vec,
+		const std::vector<ResultElement*>& vec,
 		QPen &pen1, QPen &pen2, 
 		const QColor &plot_col,
 		const float plot_step_x,
@@ -22,8 +22,8 @@ protected:
 		const float base_y,
 		const float pixmap_width );
 
-	void PlotThick(QPainter & painter, const std::vector<ElementInfo*>& vec, QPen &pen1, QPen &pen2,const float pixmap_height,const float pixmap_width,const float plot_step_x);
-	void PlotThickErrorSemiTransparent (QPainter& painter,const std::vector<ElementInfo*>& vec,const float pixmap_height,const float plot_step_x);
+	void PlotThick(QPainter & painter, const std::vector<ResultElement*>& vec, QPen &pen1, QPen &pen2,const float pixmap_height,const float pixmap_width,const float plot_step_x);
+	void PlotThickErrorSemiTransparent (QPainter& painter,const std::vector<ResultElement*>& vec,const float pixmap_height,const float plot_step_x);
 	const float left_tab;
 	const int max_polig_len;
 	const Qt::FillRule fill_rule;

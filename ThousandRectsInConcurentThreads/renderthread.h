@@ -43,8 +43,8 @@ private:
 	void MarkOutBackground(const DeviceSettings* pDeviceSettings);
 	void PlotBackground(QPainter& painter,const QRect& rect,const DeviceSettings* pDeviceSettings);
 	void DrawLabelChannel(QPainter&painter,const quint8 num_chan,const DeviceSettings* pDeviceSettings);
-	void PlotBScanRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan);
-	void paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex) ;
+	void PlotBScanRow(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const quint8 num_chan);
+	void paint(const std::vector<ResultElement*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex) ;
 private:
 
 	int _visible_elements;

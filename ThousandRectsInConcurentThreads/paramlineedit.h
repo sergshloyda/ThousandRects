@@ -46,18 +46,17 @@ public:
 	void dec_par();
 	void set_ena_enter_on_off(bool ena);
 	void set_min_max(int i_min,int i_max);
-	void set_inc_step(int istep = 1);
-	void set_num_dig(int inum_dig);
-	void set_coeff(int icoeff);
+	void set_inc_step(int istep = 1);//шаг приращения
+	void set_num_dig(int inum_dig);//число значащих цифр
+	void set_coeff(int icoeff);//делитель(число знаков после запятой)
 
 	void set_colors(const char *col);
-	void show_par();
+	void show_par();//выводит значение параметра применяя coeff и shift
 
-	void set_shift(int);
+	void set_shift(int);// начало отсчета
 
-	void apply_current();
-
-
+	void apply_current();//присваивает параметру значение, введенное с клавиатуры
+	
 signals:
 	void on_off();
 	void param_changed();

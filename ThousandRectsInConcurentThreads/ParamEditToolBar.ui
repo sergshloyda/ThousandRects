@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>229</width>
-    <height>939</height>
+    <width>231</width>
+    <height>944</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,16 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="DeviceGroupBox" name="groupBox_defectoscop">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
        <width>200</width>
-       <height>721</height>
+       <height>821</height>
       </size>
      </property>
      <property name="font">
@@ -76,13 +82,13 @@
         <property name="minimumSize">
          <size>
           <width>192</width>
-          <height>59</height>
+          <height>90</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
           <width>192</width>
-          <height>59</height>
+          <height>90</height>
          </size>
         </property>
         <property name="frameShape">
@@ -1968,6 +1974,43 @@
        </widget>
       </item>
       <item>
+       <widget class="QFrame" name="frame_manual_speed">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="ManualSpeedLbl" name="label_manual_speed">
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
+           </property>
+           <property name="text">
+            <string>V __ мм/с</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
        <widget class="QFrame" name="frame_debug">
         <property name="minimumSize">
          <size>
@@ -2074,6 +2117,7 @@
      <zorder>frame_scale</zorder>
      <zorder>frame_vrch_on_of</zorder>
      <zorder>frame_debug</zorder>
+     <zorder>frame_manual_speed</zorder>
     </widget>
    </item>
    <item>
@@ -2082,12 +2126,12 @@
       <enum>Qt::Vertical</enum>
      </property>
      <property name="sizeType">
-      <enum>QSizePolicy::Maximum</enum>
+      <enum>QSizePolicy::Expanding</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>96</height>
+       <height>40</height>
       </size>
      </property>
     </spacer>
@@ -2125,6 +2169,11 @@
    <extends>QGroupBox</extends>
    <header>devicegroupbox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ManualSpeedLbl</class>
+   <extends>QLabel</extends>
+   <header>manualspeedlbl.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

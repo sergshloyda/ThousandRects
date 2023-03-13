@@ -8,6 +8,7 @@
 #include "devicesettings.h"
 #include "qmap.h"
 #include "connstatusindicator.h"
+#include "dial_control_par.h"
 
 #define NGEN_BG_COLOR "rgb(250, 250, 250)"
 #define NGEN_ON_COLOR "rgb(250, 0, 0)"
@@ -143,7 +144,9 @@ public:
 	void set_vrch_point();
 	void select_obj_par_button();
 	void setMenuConnectionState(bool state);
-	
+	void setQueueLen(const int);
+	void AppendCoord(const quint32 curr_coord,const quint32 prev_coord,const int num_miss_coord);
+
 	QLabel* getLabelConn();
 
 
@@ -187,8 +190,6 @@ public:
 
 
 	Q_SLOT void param_set_pos_edit(const bool pos_edit);
-	/*Q_SLOT void extra_por_2_changed();
-	Q_SLOT void extra_por_3_changed();*/
 	Q_SLOT void slot_chan_us_set(bool chan_us_set);
 	Q_SLOT void rej_slot(int);
 	Q_SLOT void slot_us_on_off();
@@ -215,9 +216,14 @@ public:
 
 	Q_SLOT void setConnState(ConnStatusIndicator::ConnectionState,const QString &);
 
+
+	Q_SLOT void edit_obj_params();
+	//Q_SLOT void collect_amps(const QByteArray&);
+	//********signals***********************************
 	Q_SIGNAL void EditToggled();
 	Q_SIGNAL void refresh_osc_widget();
 	Q_SIGNAL void set_ampl_info(const QString& ampl_info);
+	Q_SIGNAL void control_param_changed();
 private:
 	
 	MainMenu* _main_menu;
@@ -227,6 +233,7 @@ private:
 	QMap<int,QString> _rej_str_map;
 	QMap<StrobType,QString> _strob_str_map;
 	ConnStatusIndicator _conn_status_ind;
+	DialControlPar* _dial_control_par;
 	bool detpar_changing;
 	bool rej_changing;
 	bool npow_changing;

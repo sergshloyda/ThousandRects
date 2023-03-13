@@ -25,6 +25,7 @@
 #include "checkboxsel.h"
 #include "comboboxsel.h"
 #include "devicegroupbox.h"
+#include "manualspeedlbl.h"
 #include "paramendrlineeditsel.h"
 #include "paramlineeditsel.h"
 #include "pushbuttonsel.h"
@@ -135,6 +136,9 @@ public:
     PushButtonSel *button_reset_coord;
     CheckBoxSel *checkBox_scale_mode;
     QLabel *label_coord;
+    QFrame *frame_manual_speed;
+    QVBoxLayout *verticalLayout_4;
+    ManualSpeedLbl *label_manual_speed;
     QFrame *frame_debug;
     QVBoxLayout *verticalLayout_2;
     QHBoxLayout *horizontalLayout;
@@ -149,12 +153,17 @@ public:
     {
         if (ParamEditToolBar->objectName().isEmpty())
             ParamEditToolBar->setObjectName(QStringLiteral("ParamEditToolBar"));
-        ParamEditToolBar->resize(229, 939);
+        ParamEditToolBar->resize(231, 944);
         verticalLayout = new QVBoxLayout(ParamEditToolBar);
         verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         groupBox_defectoscop = new DeviceGroupBox(ParamEditToolBar);
         groupBox_defectoscop->setObjectName(QStringLiteral("groupBox_defectoscop"));
-        groupBox_defectoscop->setMinimumSize(QSize(200, 721));
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(groupBox_defectoscop->sizePolicy().hasHeightForWidth());
+        groupBox_defectoscop->setSizePolicy(sizePolicy);
+        groupBox_defectoscop->setMinimumSize(QSize(200, 821));
         QFont font;
         font.setFamily(QStringLiteral("Arial"));
         font.setPointSize(13);
@@ -175,8 +184,8 @@ public:
 
         frame_common = new QFrame(groupBox_defectoscop);
         frame_common->setObjectName(QStringLiteral("frame_common"));
-        frame_common->setMinimumSize(QSize(192, 59));
-        frame_common->setMaximumSize(QSize(192, 59));
+        frame_common->setMinimumSize(QSize(192, 90));
+        frame_common->setMaximumSize(QSize(192, 90));
         frame_common->setFrameShape(QFrame::Box);
         frame_common->setFrameShadow(QFrame::Sunken);
         button_object_par = new PushButtonSel(frame_common);
@@ -674,6 +683,23 @@ public:
 
         verticalLayout_3->addWidget(frame_scale);
 
+        frame_manual_speed = new QFrame(groupBox_defectoscop);
+        frame_manual_speed->setObjectName(QStringLiteral("frame_manual_speed"));
+        frame_manual_speed->setFrameShape(QFrame::StyledPanel);
+        frame_manual_speed->setFrameShadow(QFrame::Raised);
+        verticalLayout_4 = new QVBoxLayout(frame_manual_speed);
+        verticalLayout_4->setSpacing(0);
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
+        verticalLayout_4->setContentsMargins(0, 0, 0, 0);
+        label_manual_speed = new ManualSpeedLbl(frame_manual_speed);
+        label_manual_speed->setObjectName(QStringLiteral("label_manual_speed"));
+        label_manual_speed->setFrameShape(QFrame::Box);
+
+        verticalLayout_4->addWidget(label_manual_speed);
+
+
+        verticalLayout_3->addWidget(frame_manual_speed);
+
         frame_debug = new QFrame(groupBox_defectoscop);
         frame_debug->setObjectName(QStringLiteral("frame_debug"));
         frame_debug->setMinimumSize(QSize(192, 65));
@@ -735,10 +761,11 @@ public:
         frame_scale->raise();
         frame_vrch_on_of->raise();
         frame_debug->raise();
+        frame_manual_speed->raise();
 
         verticalLayout->addWidget(groupBox_defectoscop);
 
-        verticalSpacer = new QSpacerItem(20, 96, QSizePolicy::Minimum, QSizePolicy::Maximum);
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout->addItem(verticalSpacer);
 
@@ -825,6 +852,7 @@ public:
         button_reset_coord->setText(QApplication::translate("ParamEditToolBar", "\320\241\320\261\321\200\320\276\321\201", 0));
         checkBox_scale_mode->setText(QApplication::translate("ParamEditToolBar", "\320\234\320\260\321\201\321\210\321\202\320\260\320\261\320\270\321\200\320\276\320\262\320\260\321\202\321\214 \320\272 \320\264\320\276\320\277\321\203\321\201\320\272\321\203", 0));
         label_coord->setText(QApplication::translate("ParamEditToolBar", "0", 0));
+        label_manual_speed->setText(QApplication::translate("ParamEditToolBar", "V __ \320\274\320\274/\321\201", 0));
         pushButton_start_stop->setText(QApplication::translate("ParamEditToolBar", "Test", 0));
         pushButt_debug->setText(QApplication::translate("ParamEditToolBar", "Debug", 0));
         pushButton_save_osc->setText(QApplication::translate("ParamEditToolBar", "\320\236\321\201\321\206\320\270\320\273.", 0));

@@ -27,7 +27,7 @@ RenderThread::~RenderThread()
 {
 
 }
-void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex) 
+void RenderThread::paint(const std::vector<ResultElement*>& vec,const QRect& rect,const DeviceSettings* pDeviceSettings, QMutex* pDataMutex) 
 {
 	QImage image(rect.width(), rect.height(), QImage::Format_ARGB32_Premultiplied);
 	
@@ -41,10 +41,11 @@ void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,
 	QMutexLocker locker(pDataMutex);
 	std::shared_ptr<CoordDrawStrategy> pCoordStrategy(_pDrawStrategyContainer->drawStrategy<CoordDrawStrategy>(CoordDrawStategyId));
 	pCoordStrategy->Plot(p,vec,_coord_plotter_rect,_plot_step_x);
+#if 1
 	std::shared_ptr<MnemoDrawStrategy> pMnemoDrawStrategy(_pDrawStrategyContainer->drawStrategy<MnemoDrawStrategy>(MnemoDrawStrategyId));
 	pMnemoDrawStrategy->SetInitialSettings(pDeviceSettings);
 	pMnemoDrawStrategy->Plot(p,vec,_mnemo_plotter_rect,_plot_step_x);
-		
+	
 	for(quint8 num_chan=0;num_chan<pDeviceSettings->getChansCount();num_chan++)
 	{
 		switch(pDeviceSettings->getChanMode(num_chan))
@@ -91,6 +92,7 @@ void RenderThread::paint(const std::vector<ElementInfo*>& vec,const QRect& rect,
 		}
 
 	}
+#endif
 	PlotBackground(p,rect,pDeviceSettings);
 	
 	}
@@ -223,7 +225,7 @@ void RenderThread::DrawLabelChannel(QPainter&painter,const quint8 num_chan,const
 }
 
 
-void RenderThread::PlotBScanRow(QPainter& painter,const std::vector<ElementInfo*>& vec,const QRectF& rect,const quint8 num_chan)
+void RenderThread::PlotBScanRow(QPainter& painter,const std::vector<ResultElement*>& vec,const QRectF& rect,const quint8 num_chan)
 {
 
 	painter.save();
@@ -276,7 +278,7 @@ void RenderThread::setPlotStep(float plot_step)
 }
 void RenderThread::replot(const QRect& rect)
 {
-	std::vector<ElementInfo*> vec;
+	std::vector<ResultElement*> vec;
 	calc_visible_elements(rect);
 	int request_size=get_visible_count();
 	_pResultDataProcessor->set_requested_size(request_size);

@@ -4,11 +4,8 @@
 
 SendRsvObj::SendRsvObj(	QObject *parent,
 
-/*				quint8 *contr_status,
-				quint8 *queue_len,
-				RingBuffer_C<amp_respond_t> *buf_ampl,
-*/				osc_struct_t *osc_struct,
-				spectr_struct_t *spectr_struct,
+
+			
 
 				quint32 *g_req_send_dat,
 				device_data_t *dev_data,
@@ -46,13 +43,7 @@ SendRsvObj::SendRsvObj(	QObject *parent,
 
 
 		p_indic_states(indic_states),
-
-
-/*		p_queue_len(queue_len),
-		p_contr_status(contr_status),
-		p_buf_ampl(buf_ampl),
-*/		p_osc_struct(osc_struct),
-		p_spectr_struct(spectr_struct),
+	
 
 
 		req_timer(this)
@@ -80,7 +71,7 @@ SendRsvObj::~SendRsvObj()
 
 bool SendRsvObj::send_param()
 {
-	param_buffer.set<quint16>(0);     // длина
+	param_buffer.set<quint16>(0);     // первые 2 байта(sizeof(quint16)) устанавливаем в 0
 	param_buffer.add(m_changed_param);
 
 
@@ -231,16 +222,7 @@ void SendRsvObj::req_timer_timeout()
 		if(get_result)
 		{
 			QByteArray osc_array(reinterpret_cast<const char *>(data_buff), sizeof(osc_struct_t));
-//			emit signal_collect_amps(ampl_array);		
-//			
-//			QByteArray buf;
-//buf.resize(sizeof(osc_struct_t));
-//QDataStream stream( &buf, QIODevice::WriteOnly );
-//
-//stream.writeRawData(  reinterpret_cast<const char*>(data_buff), sizeof(osc_struct_t) );
-//			
-//			memcpy(p_osc_struct, data_buff, sizeof(osc_struct_t));// так как p_osc_struct указывает на c_obj_cmd osc_struct пишем фактически туда
-			emit signal_draw_osc(osc_array);// здесь мы в слоте draw_osc() эти данные используем
+			emit signal_draw_osc(osc_array);
 		}
 
 		if(!on_tune_thr)
@@ -248,13 +230,7 @@ void SendRsvObj::req_timer_timeout()
 
 
 
-/*		get_result = dev_cmd.dev_get_spectr( data_buff );
 
-		if(get_result)
-		{
-			memcpy(p_spectr_struct, data_buff, sizeof(spectr_struct_t));
-			emit signal_draw_spectr();
-		}*/
 
 		if(!on_tune_thr)
 			return;
@@ -334,12 +310,12 @@ bool SendRsvObj::apply_params()
 {
 	quint8 curr_mode = 0;
 	bool result = dev_cmd.dev_get_cur_rej(&curr_mode);
-
+	quint8 setup_view_mode=((REJ_AUTO_FLAW << REJ_MAIN_OFFSET) | REJ_MENU_SETUP);	//0x31
 	if(result && on_tune_thr)
 	{
-		if(curr_mode != 0x31)
+		if(curr_mode != setup_view_mode)
 		{
-			result = dev_cmd.dev_set_cur_rej(0x31);			// REJ_AUTO_FLAW  | REJ_MENU_SETUP
+			result = dev_cmd.dev_set_cur_rej(setup_view_mode);			// REJ_AUTO_FLAW  | REJ_MENU_SETUP
 			if(!result && on_tune_thr)
 				emit signal_wrong_mode();
 		}
